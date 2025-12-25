@@ -1,0 +1,98 @@
+.course-card {
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.course-card:hover {
+    transform: scale(1.04);
+}
+
+.course-title {
+    font-size: 15px;
+    height: 38px;
+    overflow: hidden;
+}
+
+.bg-purple {
+    background: #6f42c1;
+}
+
+/* ===== Slider Buttons ===== */
+.custom-arrow {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    z-index: 99;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.custom-arrow i {
+    font-size: 22px;
+    color: #000;
+}
+
+.custom-arrow.prev {
+    left: -15px;
+}
+
+.custom-arrow.next {
+    right: -15px;
+}
+
+/* ===== Prevent Cutting Popup ===== */
+
+
+/* ===== Popup Box ===== */
+.preview-popup {
+    position: absolute;
+    width: 430px;
+    min-height: 310px;
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    z-index: 99999;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+    animation: fadeIn .2s ease-in-out;
+}
+
+/* Right Side */
+.preview-popup.right {
+    top: 0;
+    left: calc(100% + 12px);
+}
+
+.preview-popup.left {
+    top: 0;
+    right: calc(100% + 12px);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.preview-popup ul {
+    padding-left: 18px;
+    font-size: 14px;
+}
+
+.preview-popup li {
+    margin-bottom: 6px;
+}

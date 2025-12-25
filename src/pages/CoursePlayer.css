@@ -1,0 +1,375 @@
+.course-player-page {
+    background: #0b0f19;
+    min-height: 100vh;
+    color: white;
+}
+
+/* ===== TOP BAR ===== */
+.course-topbar {
+    background: #111827;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.course-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.top-actions {
+    display: flex;
+    gap: 18px;
+}
+
+.link {
+    cursor: pointer;
+    opacity: .9;
+}
+
+.share-btn {
+    background: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.course-layout {
+    display: flex;
+    gap: 14px;
+    padding: 14px;
+}
+
+/* ===== LEFT BOX (VIDEO + DATA) ===== */
+.content-box {
+    width: 74%;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Top Lecture Header */
+.current-lecture {
+    background: #000;
+    color: white;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.lecture-number {
+    color: #a78bfa;
+    margin-right: 6px;
+}
+
+/* Video */
+.video-area iframe {
+    width: 100%;
+    height: 430px;
+}
+
+/* Tabs */
+.course-tabs {
+    background: white;
+    color: black;
+}
+
+/* ===== RIGHT SIDEBAR ===== */
+.course-sidebar {
+    width: 26%;
+    background: white;
+    color: black;
+    border-radius: 10px;
+    padding: 10px;
+    height: 86vh;
+    overflow-y: auto;
+}
+
+.sidebar-tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab {
+    flex: 1;
+    padding: 10px;
+    font-weight: 600;
+    border: none;
+    background: none;
+}
+
+.active {
+    border-bottom: 3px solid #6d28d9;
+}
+
+/* Sections */
+.course-section {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.section-header {
+    background: #f6f6ff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
+.section-body {
+    padding: 10px;
+}
+
+.section-body p {
+    cursor: pointer;
+    margin: 5px 0;
+}
+
+.section-body p:hover {
+    color: #6d28d9;
+}
+
+/* Scrollbar */
+.course-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.course-sidebar::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 8px;
+}
+
+/* Accordion Header Right Meta Text */
+.section-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: #555;
+}
+
+/* Accordion Body */
+.accordion-body {
+    padding: 8px 10px;
+}
+
+/* Each Lecture Item */
+.lecture-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px 10px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+    border: 1px solid transparent;
+}
+
+/* Hover Effect */
+.lecture-item:hover {
+    background: #f4f6ff;
+    border: 1px solid #d7d8ff;
+}
+
+/* Left text group */
+.lecture-item div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+/* Duration text */
+.lecture-item small {
+    color: #666;
+}
+
+/* Purple Bullet Circle */
+.circle {
+    width: 9px;
+    height: 9px;
+    background: #6d28d9;
+    border-radius: 50%;
+}
+
+/* PROGRESS POPOVER */
+#progress-pop {
+    border-radius: 12px;
+    border: none;
+}
+
+.progress-title {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.progress-sub {
+    color: gray;
+    margin: 0;
+}
+
+/* Accordion Section Header Meta */
+.section-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: gray;
+}
+
+/* Lecture List */
+.lecture-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.lecture-item:hover {
+    background: #f4f4ff;
+}
+
+.circle {
+    width: 10px;
+    height: 10px;
+    background: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+
+/* ⭐ Rating Modal */
+.rating-box {
+    background: white;
+    width: 520px;
+    padding: 35px;
+    border-radius: 18px;
+    text-align: center;
+    margin: auto;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    position: absolute;
+    right: 25px;
+    top: 20px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.rating-title {
+    font-weight: 800;
+    font-size: 22px;
+}
+
+.rating-sub {
+    color: gray;
+    margin-bottom: 20px;
+}
+
+.stars {
+    margin-top: 10px;
+}
+
+.star {
+    font-size: 40px;
+    color: #cfcfcf;
+    margin: 0 8px;
+    cursor: pointer;
+}
+
+.star.active,
+.star:hover {
+    color: #ff9f00;
+}
+
+/* ===== STEP 2 RATING BOX ===== */
+.rating-step2 {
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    text-align: center;
+    position: relative;
+}
+
+/* Back Button */
+.back-btn {
+    position: absolute;
+    left: 20px;
+    top: 25px;
+    background: #f3e9ff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #6d28d9;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Rating Level Label */
+.rating-level {
+    font-weight: 600;
+    margin-top: 5px;
+    color: #666;
+}
+
+/* Textarea */
+.rating-textarea {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid #cfcfcf;
+    margin-top: 20px;
+    resize: none;
+}
+
+.rating-textarea:focus {
+    outline: none;
+    border-color: #8b5cf6;
+}
+
+.continue-btn {
+    margin-top: 18px;
+    background: #7c3aed;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* ===== TOP TITLE BAR LIKE UDEMY ===== */
+.course-title-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* LMS text (logo) */
+.course-title-bar .brand {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Vertical Divider */
+.course-title-bar .divider {
+    height: 18px;
+    width: 1px;
+    background: #9ca3af;
+    opacity: .8;
+}
+
+/* Course Name Text */
+.course-title-bar .course-name {
+    opacity: .9;
+}

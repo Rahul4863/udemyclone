@@ -1,0 +1,92 @@
+/* ---------- Page Wrapper ---------- */
+.create-course-wrapper {
+    background: #f7f9ff;
+    min-height: 100vh;
+    padding-bottom: 50px;
+}
+
+/* ---------- Section Card ---------- */
+.course-card {
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, .08);
+}
+
+/* ---------- Heading ---------- */
+.create-title {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #333;
+}
+
+/* ---------- Step Pills ---------- */
+.nav-pills .nav-link {
+    border-radius: 30px;
+    padding: 10px 18px;
+    margin-right: 10px;
+    background: #e9ecff;
+    color: #555;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.nav-pills .nav-link.active {
+    background: #6c63ff;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(108, 99, 255, .4);
+}
+
+.nav-pills .nav-link:hover {
+    background: #cfd6ff;
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+    background: #6c63ff;
+    border: none;
+    padding: 7px 16px;
+}
+
+.btn-primary:hover {
+    background: #4e45ff;
+}
+
+.btn-success {
+    padding: 7px 16px;
+}
+
+/* ---------- Section Box ---------- */
+.section-box {
+    background: #eef2ff;
+    border: 1px dashed #aab3ff;
+    border-radius: 8px;
+}
+
+/* ---------- Lecture Box ---------- */
+.lecture-box {
+    border-left: 5px solid #6c63ff;
+}
+
+/* ---------- Inputs ---------- */
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, .25);
+    border-color: #6c63ff;
+}
+
+/* ---------- Add Buttons ---------- */
+.add-btn {
+    border-radius: 30px;
+    font-weight: 600;
+}
+
+.add-btn:hover {
+    background: #ddd;
+}
+
+/* ---------- Payment Highlight ---------- */
+.final-price-box {
+    background: #e8ffef;
+    border: 2px solid #28a745;
+    border-radius: 8px;
+}

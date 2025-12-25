@@ -1,0 +1,178 @@
+.course-header {
+    background: #111;
+    background: linear-gradient(120deg, #000, #1b1b1b, #222);
+}
+
+.buy-box {
+    width: 320px;
+    background: #0d0d0d;
+    color: white;
+    border: 1px solid #333;
+    position: sticky;
+    top: 20px;
+}
+
+.video-thumb {
+    cursor: pointer;
+}
+
+.play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55px;
+    height: 55px;
+    background: white;
+    color: black;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    box-shadow: 0 0 25px rgba(255, 255, 255, .4);
+}
+
+.video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.video-box video {
+    width: 70vw;
+    border-radius: 10px;
+}
+
+/* Make layout behave */
+.course-detail .container {
+    align-items: flex-start;
+}
+
+/* Right Buy Box */
+.buy-box {
+    width: 340px;
+    background: #0f0f0f;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 12px;
+    position: sticky;
+    top: 20px;
+
+    height: auto;
+    /* important */
+    flex-shrink: 0;
+    /* DO NOT STRETCH */
+}
+
+/* Prevent thumbnail from stretching */
+.video-thumb img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* Play Button */
+.play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: black;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.related-topics h3 {
+    font-size: 28px;
+}
+
+.topic-badge {
+    background: #0d6efd;
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+
+.topic-badge:hover {
+    background: #0b5ed7;
+    transform: translateY(-2px);
+}
+
+/* Curriculum Box */
+.p-4.rounded.shadow-sm.mb-4 {
+    border-radius: 14px !important;
+    border: 1px solid #e5e7eb;
+}
+
+/* Header line spacing */
+.p-4.rounded.shadow-sm.mb-4 h3 {
+    font-size: 24px;
+}
+
+/* Expand Button */
+.expand-btn {
+    border: 1px solid #2563eb;
+    color: #2563eb;
+    background: #eff6ff;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+.expand-btn:hover {
+    background: #2563eb;
+    color: white;
+}
+
+/* Accordion Header Card Look */
+.accordion-item {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+/* Header Button */
+.accordion-button {
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 700;
+    background: #fafafa;
+}
+
+.accordion-button:not(.collapsed) {
+    background: #eef2ff;
+    box-shadow: none;
+}
+
+/* Right side text */
+.accordion-button span {
+    font-size: 14px;
+}
+
+/* Lecture row */
+.accordion-body div {
+    font-size: 14px;
+}
+
+/* Hover effect */
+.accordion-item:hover {
+    border-color: #93c5fd;
+}

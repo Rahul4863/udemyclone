@@ -1,0 +1,182 @@
+.courses-wrapper {
+  padding-top: 10px;
+}
+
+.filter-box {
+  position: sticky;
+  top: 80px;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+}
+
+.accordion-button {
+  font-weight: 600;
+  border-radius: 8px !important;
+}
+
+.accordion-item {
+  border-radius: 12px !important;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.filter-check {
+  margin-bottom: 6px;
+}
+
+.course-card {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #ddd !important;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, .15);
+}
+
+.course-img {
+  height: 190px;
+  object-fit: cover;
+}
+
+.badge {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+
+/* Pagination Wrapper */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 35px;
+  margin-bottom: 70px;
+  /* Bottom spacing */
+}
+
+/* Buttons */
+.pagination-btn,
+.pagination-number {
+  border: 1px solid #0d6efd;
+  background: white;
+  color: #0d6efd;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+}
+
+/* Hover Effect */
+.pagination-btn:hover,
+.pagination-number:hover {
+  background: #0d6efd;
+  color: white;
+}
+
+/* Disable Style */
+.pagination-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* Active Page */
+.pagination-number.active {
+  background: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+
+.preview-popup {
+  position: absolute;
+  top: 10px;
+  width: 420px;
+  background: white;
+  padding: 18px;
+  border-radius: 10px;
+  z-index: 999;
+}
+
+.preview-popup.right {
+  left: 105%;
+}
+
+.preview-popup.left {
+  right: 105%;
+}
+
+.bg-purple {
+  background: #6f42c1;
+}
+
+/* Sidebar Accordion */
+.accordion-item {
+  border: none;
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.accordion-button {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-meta {
+  font-size: 12px;
+  color: #666;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #eef0ff;
+  color: #111;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+}
+
+/* Lesson list */
+.accordion-body p {
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+.accordion-body p:hover {
+  color: #6d28d9;
+}
+
+
+#progress-pop {
+  border-radius: 14px;
+  padding: 6px;
+}
+
+#progress-pop .popover-body {
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
+  padding: 14px 18px;
+}
+
+.progress-title {
+  font-weight: 700;
+  margin: 0;
+  font-size: 15px;
+}
+
+.progress-sub {
+  margin: 6px 0 0 0;
+  font-size: 14px;
+  color: #6b6b6b;
+}

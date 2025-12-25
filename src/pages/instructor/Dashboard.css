@@ -1,0 +1,141 @@
+.dashboard-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Card */
+.stat-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    transition: .3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Icon Circle */
+.icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.purple {
+    background: #7366ff;
+}
+
+.pink {
+    background: #f73164;
+}
+
+.green {
+    background: #51bb25;
+}
+
+.orange {
+    background: #ff8f0f;
+}
+
+/* Headings */
+.stat-card h4 {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+}
+
+.stat-card h2 {
+    margin: 8px 0;
+}
+
+/* Status Text */
+.increase {
+    color: #28a745;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.decrease {
+    color: #d9534f;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* =========================
+   USERS TABLE CARD
+========================= */
+
+.users-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    margin-top: 25px;
+}
+
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.users-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.view-btn {
+    background: #eef2ff;
+    color: #6c63ff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th {
+    text-align: left;
+    padding: 12px 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.users-table td {
+    padding: 14px 8px;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+}

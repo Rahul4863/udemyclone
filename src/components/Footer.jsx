@@ -1,5 +1,6 @@
 import "./Footer.css";
-export default function Footer() {
+import { Link } from "react-router-dom";
+function Footer() {
     return (
         <footer className="udemy-footer">
             <div className="footer-top">
@@ -66,21 +67,19 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="footer-bottom-grid">
-                    <div>
-                        <h5>About</h5>
+                <div className="footer-bottom">
+                    <div className="footer-bottom-links">
                         <a>About us</a>
                         <a>Careers</a>
-                        <a>Contact us</a>
-                        <a>Blog</a>
+                        <Link to="/contact" style={{ color: "white", textDecoration: "none" }}>Contact us</Link>
+                        <Link to="/blog" style={{ color: "white", textDecoration: "none" }}>Blog</Link>
                     </div>
                 </div>
-
             </div>
-
             <div className="footer-end">
                 © 2025 LMS Platform | All Rights Reserved
             </div>
         </footer>
     );
 }
+export default Footer;

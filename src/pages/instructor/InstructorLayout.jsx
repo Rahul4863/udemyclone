@@ -80,6 +80,14 @@ export default function InstructorLayout() {
                             {!collapsed && "Students"}
                         </NavLink>
                     </li>
+                    <li>
+                        <NavLink
+                            to="/instructor/allblogs"
+                        >
+                            <FaUsers className="icon" />
+                            {!collapsed && "Blogs"}
+                        </NavLink>
+                    </li>
                 </ul>
             </div>
             <div className="content-area">

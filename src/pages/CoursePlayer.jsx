@@ -4,15 +4,11 @@ import { useNavigate } from "react-router-dom";
 import "./CoursePlayer.css";
 
 export default function CoursePlayer() {
-
     const navigate = useNavigate();
     const [showRating, setShowRating] = useState(false);
     const [rating, setRating] = useState(0);
-
     return (
         <div className="course-player-page">
-
-            {/* ===== TOP BAR ===== */}
             <div className="course-topbar">
                 <div className="course-title-bar">
                     <span className="brand" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>LMS</span>
@@ -51,7 +47,7 @@ export default function CoursePlayer() {
                         <span className="link progress-btn">Your Progress</span>
                     </OverlayTrigger>
 
-                    <button className="share-btn">Share</button>
+                    {/* <button className="share-btn">Share</button> */}
                 </div>
             </div>
 
@@ -221,7 +217,7 @@ export default function CoursePlayer() {
 
 
             {/* ===== RATING MODAL ===== */}
-            /* ===== RATING MODAL ===== */
+
             <Modal show={showRating} onHide={() => setShowRating(false)} centered>
                 {!rating ? (
                     /* STEP 1 — SELECT RATING */

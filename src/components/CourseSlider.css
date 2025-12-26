@@ -18,7 +18,6 @@
     background: #6f42c1;
 }
 
-/* ===== Slider Buttons ===== */
 .custom-arrow {
     position: absolute;
     top: 40%;
@@ -49,20 +48,18 @@
     right: -15px;
 }
 
-/* ===== Prevent Cutting Popup ===== */
-
-
-/* ===== Popup Box ===== */
 .preview-popup {
     position: absolute;
     width: 430px;
-    min-height: 310px;
+    min-height: 320px;
     background: white;
     padding: 18px;
-    border-radius: 14px;
+    border-radius: 12px;
     z-index: 99999;
     box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
     animation: fadeIn .2s ease-in-out;
+    border: 3px solid #ccc;
+    bottom: 12px;
 }
 
 /* Right Side */
@@ -95,4 +92,14 @@
 
 .preview-popup li {
     margin-bottom: 6px;
+}
+
+.preview-popup .wishlist-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
 }

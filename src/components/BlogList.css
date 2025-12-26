@@ -1,0 +1,124 @@
+.blog-wrapper {
+    background: #f7f9fc;
+    min-height: 100vh;
+}
+
+.blog-heading {
+    font-weight: 800;
+    color: #0f172a;
+}
+
+/* Card */
+.blog-card {
+    background: #ffffff;
+    border-radius: 14px;
+    max-width: 360px;
+    /* controls width */
+    margin: auto;
+    overflow: hidden;
+    transition: all .3s ease-in-out;
+}
+
+.blog-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Image */
+.blog-img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+}
+
+/* Date Badge */
+.date-badge {
+    display: inline-block;
+    background: #e9f1ff;
+    color: #2563eb;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Title */
+.blog-title {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 18px;
+}
+
+/* Description */
+.blog-desc {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.read-more-btn {
+    border: none;
+    outline: none;
+    width: 140px;
+    padding: 8px 10px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #0b5cff, #6dd5ff);
+    color: white;
+    font-weight: 600;
+    transition: .3s;
+    font-size: 14px;
+}
+
+.read-more-btn:hover {
+    background: linear-gradient(135deg, #043ccf, #3ec0ff);
+}
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Buttons */
+.pg-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    border: none;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.09);
+    color: #0a2540;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all .3s ease;
+}
+
+.pg-btn:hover {
+    background: #eef3ff;
+}
+
+.pg-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+/* Active Page */
+.pg-btn.active {
+    background: #4fc3ff;
+    color: white;
+}
+
+.category-badge {
+    display: inline-block;
+    background: #eaf7ff;
+    color: #0c6efd;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.category-badge i {
+    margin-right: 4px;
+}

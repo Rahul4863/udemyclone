@@ -28,8 +28,8 @@ function CourseSlider({ title, courses }) {
         const slide = e.currentTarget;
         const rect = slide.getBoundingClientRect();
         const popupWidth = 430;
-        const gap = 18;           // Safety space
-        const safetyMargin = 30;  // Fix for 2nd last item
+        const gap = 18;
+        const safetyMargin = 30;
         const availableRightSpace =
             window.innerWidth - (rect.right + popupWidth + gap);
         if (availableRightSpace < safetyMargin) {
@@ -82,7 +82,6 @@ function CourseSlider({ title, courses }) {
                             <Card.Body>
                                 <Card.Title className="course-title h6">{c.title}</Card.Title>
                                 <p className="text-muted small">{c.trainer}</p>
-
                                 <p className="mb-0 fw-bold">
                                     ⭐ {c.rating}{" "}
                                     <span className="text-muted">({c.reviews})</span>
@@ -125,16 +124,14 @@ function CourseSlider({ title, courses }) {
                                     <li>Job ready skills</li>
                                 </ul>
 
-                                <div className="d-flex align-items-center gap-2 mt-3">
-                                    <button className="btn btn-light border rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                <div className="d-flex align-items-center gap-2 mt-3" style={{ position: "absolute", bottom: "12px", left: "12px" }}>
+                                    <button className="btn btn-light border wishlist-btn">
                                         <i className="bi bi-heart fs-5"></i>
                                     </button>
-
                                     <button className="btn btn-primary flex-grow-1">
                                         Add to cart
                                     </button>
                                 </div>
-
                             </div>
 
                         )}

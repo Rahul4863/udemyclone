@@ -9,6 +9,8 @@ export default function NavBar() {
     const [activeCat, setActiveCat] = useState(null);
     const [arrowLeft, setArrowLeft] = useState(0);
     const [showCart, setShowCart] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
+
 
     const [cartItems, setCartItems] = useState([
         {
@@ -155,13 +157,39 @@ export default function NavBar() {
                             style={{ cursor: "pointer" }}
                             onClick={() => navigate("/login")}
                         ></i>
-                        {/* <img
-                            src="https://picsum.photos/40"
-                            className="rounded-circle"
-                            alt="profile"
-                            width="35"
-                            height="35"
-                        /> */}
+                        <div
+                            className="profile-wrapper"
+                            onClick={() => setShowProfile(prev => !prev)}
+                        >
+                            <img
+                                src="https://picsum.photos/40"
+                                className="rounded-circle profile-img"
+                                alt="profile"
+                                width="35"
+                                height="35"
+                            />
+                            {showProfile && (
+                                <div className="profile-dropdown shadow">
+                                    <p className="profile-name">
+                                        Hello, Rahul 👋
+                                    </p>
+                                    <hr />
+                                    <button
+                                        className="profile-btn"
+                                        onClick={() => navigate("instructor/instructor-create")}
+                                    >
+                                        <i className="bi bi-person"></i> Edit Profile
+                                    </button>
+                                    <button
+                                        className="profile-btn logout"
+                                        onClick={() => navigate("/login")}
+                                    >
+                                        <i className="bi bi-box-arrow-right"></i> Sign Out
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
                     </Nav>
 
                 </Container>

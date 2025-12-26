@@ -16,7 +16,13 @@ import Courses from "./pages/Courses";
 import MyLearning from "./pages/MyLearning";
 import InstructorCreate from "./pages/instructor/InstructorCreate";
 import { useLocation } from "react-router-dom";
+import BlogList from "./components/BlogList";
+import BlogCreate from "./pages/instructor/BlogCreate";
 import CoursePlayer from "./pages/CoursePlayer";
+import Contact from "./components/Contact";
+import AllBlogs from "./pages/instructor/AllBlogs";
+import BlogDetails from "./components/BlogDetails";
+
 
 import "./App.css";
 
@@ -174,6 +180,9 @@ function App() {
         <Route path="/mylearning" element={<MyLearning />} />
         <Route path="/course/:id" element={<CourseDetail />} />
         <Route path="/courseplayer/:id" element={<CoursePlayer />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<BlogList />} />
+        <Route path="/blog/:id" element={<BlogDetails />} />
 
         {/* INSTRUCTOR PANEL */}
         <Route path="/instructor" element={<InstructorLayout />} >
@@ -181,13 +190,12 @@ function App() {
           <Route path="create" element={<CreateCourse />} />
           <Route path="courses" element={<AllCourses />} />
           <Route path="students" element={<Students />} />
+          <Route path="blog" element={<BlogList />} />
+          <Route path="blog-create" element={<BlogCreate />} />
+          <Route path="allblogs" element={<AllBlogs />} />
           <Route path="instructor-create" element={<InstructorCreate />} />
         </Route>
-
-
       </Routes>
-
-
       {!hideLayout && <Footer />}
     </>
   );

@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { Row, Col, Card, Form, Dropdown, ButtonGroup } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Row, Col, Card, Form, Dropdown, ButtonGroup, Pagination } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./MyLearning.css";
 
-export default function MyLearning() {
+function MyLearning() {
     const navigate = useNavigate();
+
     const purchasedCourses = [
         { title: "Complete Web Development Bootcamp", trainer: "Angela Yu", category: "Development", progress: 40, img: "https://picsum.photos/500/300?1" },
         { title: "Python Masterclass", trainer: "Jose Portilla", category: "Development", progress: 100, img: "https://picsum.photos/500/300?2" },
         { title: "AWS Solutions Architect", trainer: "Stephane Maarek", category: "Cloud", progress: 10, img: "https://picsum.photos/500/300?3" },
+        { title: "UI/UX Design Mastery", trainer: "Chris Do", category: "Design", progress: 75, img: "https://picsum.photos/500/300?4" },
+        { title: "UI/UX Design Mastery", trainer: "Chris Do", category: "Design", progress: 75, img: "https://picsum.photos/500/300?4" },
+        { title: "UI/UX Design Mastery", trainer: "Chris Do", category: "Design", progress: 75, img: "https://picsum.photos/500/300?4" },
         { title: "UI/UX Design Mastery", trainer: "Chris Do", category: "Design", progress: 75, img: "https://picsum.photos/500/300?4" },
     ];
 
@@ -18,7 +22,7 @@ export default function MyLearning() {
 
     const categories = ["All", "Development", "Cloud", "Design"];
 
-    // ========== FILTER LOGIC ==========
+    // ---------- FILTER COURSES ----------
     const filteredCourses = purchasedCourses.filter(c => {
         const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
         const matchCategory = category === "All" || c.category === category;
@@ -31,12 +35,32 @@ export default function MyLearning() {
         return matchSearch && matchCategory && matchProgress;
     });
 
+    // ---------- PAGINATION ----------
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+
+    // Reset to page 1 when filters/search change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, category, progressFilter]);
+
+    const indexOfLast = currentPage * itemsPerPage;
+    const indexOfFirst = indexOfLast - itemsPerPage;
+    const currentCourses = filteredCourses.slice(indexOfFirst, indexOfLast);
+
+    const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
+
+    const handlePageChange = (page) => setCurrentPage(page);
+
     return (
         <div className="container mt-4">
             <h2 className="fw-bold mb-4">My Learning</h2>
+
+            {/* ---------- FILTER BAR ---------- */}
             <div className="learning-filter-bar">
                 <div className="left-controls">
                     <div className="label">Sort by</div>
+
                     <Dropdown as={ButtonGroup}>
                         <Dropdown.Toggle className="purple-btn">
                             Recently Accessed
@@ -47,7 +71,9 @@ export default function MyLearning() {
                             <Dropdown.Item>Title (A-Z)</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
+
                     <div className="label ms-4">Filter by</div>
+
                     <Dropdown as={ButtonGroup}>
                         <Dropdown.Toggle className="purple-btn">
                             Categories
@@ -60,6 +86,7 @@ export default function MyLearning() {
                             ))}
                         </Dropdown.Menu>
                     </Dropdown>
+
                     <Dropdown as={ButtonGroup}>
                         <Dropdown.Toggle className="purple-btn">
                             Progress
@@ -83,10 +110,8 @@ export default function MyLearning() {
                     >
                         Reset
                     </span>
-
                 </div>
 
-                {/* SEARCH */}
                 <div className="search-bar">
                     <Form.Control
                         type="text"
@@ -98,12 +123,11 @@ export default function MyLearning() {
                         <i className="bi bi-search"></i>
                     </button>
                 </div>
-
             </div>
 
-            {/* ========= COURSES ========= */}
+            {/* ---------- COURSES ---------- */}
             <Row className="g-3">
-                {filteredCourses.map((c, i) => (
+                {currentCourses.map((c, i) => (
                     <Col md={6} lg={4} key={i}>
                         <Card className="shadow-sm border-0" onClick={() => navigate(`/courseplayer/${i}`)}>
                             <Card.Img src={c.img} />
@@ -122,19 +146,45 @@ export default function MyLearning() {
                                         {c.progress === 100 ? "Completed" : `${c.progress}% completed`}
                                     </small>
                                 </div>
-
                             </Card.Body>
                         </Card>
                     </Col>
                 ))}
             </Row>
 
+            {/* ---------- PAGINATION ---------- */}
+            {totalPages > 1 && (
+                <div className="d-flex justify-content-center mt-4">
+                    <Pagination className="pretty-pagination">
+                        <Pagination.Prev
+                            disabled={currentPage === 1}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                        />
+
+                        {[...Array(totalPages)].map((_, index) => (
+                            <Pagination.Item
+                                key={index + 1}
+                                active={index + 1 === currentPage}
+                                onClick={() => handlePageChange(index + 1)}
+                            >
+                                {index + 1}
+                            </Pagination.Item>
+                        ))}
+
+                        <Pagination.Next
+                            disabled={currentPage === totalPages}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                        />
+                    </Pagination>
+                </div>
+            )}
+            {/* ---------- NO DATA ---------- */}
             {filteredCourses.length === 0 && (
                 <p className="text-muted text-center mt-4">
                     No courses found.
                 </p>
             )}
-
         </div>
     );
 }
+export default MyLearning;

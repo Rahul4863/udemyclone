@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { FaHome, FaBook, FaUsers, FaChevronDown } from "react-icons/fa";
+import { FaHome, FaBook, FaUsers, FaChevronDown, FaImage } from "react-icons/fa";
 import "./AdminDashboard.css";
 import { useNavigate } from "react-router-dom";
 export default function AdminLayout() {
@@ -31,6 +31,14 @@ export default function AdminLayout() {
                             {!collapsed && "Dashboard"}
                         </NavLink>
                         <NavLink
+                            to="/admin/banner-update"
+                            end
+                            className={({ isActive }) => isActive ? "active" : ""}
+                        >
+                            <FaImage className="icon" />
+                            {!collapsed && "Banner Update"}
+                        </NavLink>
+                        <NavLink
                             to="/admin/total-instructor"
                             end
                             className={({ isActive }) => isActive ? "active" : ""}
@@ -51,18 +59,9 @@ export default function AdminLayout() {
                             {!collapsed && "SubCategory"}
                         </NavLink>
                     </li>
-
                     <li>
                         <NavLink
-                            to="/instructor/students"
-                        >
-                            <FaUsers className="icon" />
-                            {!collapsed && "Students"}
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink
-                            to="/instructor/allblogs"
+                            to="/admin/admin-blogs"
                         >
                             <FaUsers className="icon" />
                             {!collapsed && "Blogs"}
@@ -71,8 +70,6 @@ export default function AdminLayout() {
                 </ul>
             </div>
             <div className="content-area">
-
-                {/* ===== HEADER BAR ===== */}
                 <div className="header-bar">
                     <h3 className="page-title">Admin Panel</h3>
 
@@ -113,11 +110,12 @@ export default function AdminLayout() {
                                         Edit Profile
                                     </button>
 
+
                                     <button
                                         className="dropdown-item"
                                         onClick={() => {
                                             setProfileOpen(false);
-                                            navigate("/admin/changepassword");
+                                            navigate("/admin/change-password");
                                         }}
                                     >
                                         Change Password

@@ -28,6 +28,11 @@ import TotalInstructor from "./pages/admin/TotalInstructor";
 import Category from "./pages/admin/Category";
 import SubCat from "./pages/admin/SubCat";
 import AdminProfile from "./pages/admin/AdminProfile";
+import AdminBlogs from "./pages/admin/AdminBlogs";
+import BlogCreateAdmin from "./pages/admin/BlogCreateAdmin";
+import BannerUpdate from "./pages/admin/BannerUpdate";
+import Feed from "./components/Feed";
+import ChangePassword from "./pages/admin/ChangePassword";
 import "./App.css";
 const courses = [
   {
@@ -169,17 +174,17 @@ function App() {
   const location = useLocation();
   const hideLayout = location.pathname.startsWith("/instructor") ||
     location.pathname.startsWith("/courseplayer") ||
-    location.pathname.startsWith("/admin");
+    location.pathname.startsWith("/admin")
+    || location.pathname.startsWith("/feed");
   return (
     <>
       {!hideLayout && <NavBar />}
       <Routes>
-
-        {/* Public Pages */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/allcourses" element={<Courses />} />
+        <Route path="/feed" element={<Feed />} />
         <Route path="/mylearning" element={<MyLearning />} />
         <Route path="/course/:id" element={<CourseDetail />} />
         <Route path="/courseplayer/:id" element={<CoursePlayer />} />
@@ -204,7 +209,11 @@ function App() {
           <Route path="total-instructor" element={<TotalInstructor />} />
           <Route path="category" element={<Category />} />
           <Route path="subcategory" element={<SubCat />} />
+          <Route path="admin-blogs" element={<AdminBlogs />} />
+          <Route path="admin-blog-create" element={<BlogCreateAdmin />} />
           <Route path="profile" element={<AdminProfile />} />
+          <Route path="banner-update" element={<BannerUpdate />} />
+          <Route path="change-password" element={<ChangePassword />} />
         </Route>
       </Routes>
       {!hideLayout && <Footer />}

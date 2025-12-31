@@ -181,6 +181,12 @@ export default function NavBar() {
                                         <i className="bi bi-person"></i> Edit Profile
                                     </button>
                                     <button
+                                        className="profile-btn"
+                                        onClick={() => navigate("/feed")}
+                                    >
+                                        <i className="bi bi-person"></i> Feed
+                                    </button>
+                                    <button
                                         className="profile-btn logout"
                                         onClick={() => navigate("/login")}
                                     >

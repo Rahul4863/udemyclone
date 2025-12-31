@@ -16,7 +16,6 @@ function SignUp() {
                         className="form-control rounded-pill"
                     />
                 </div>
-
                 <div className="mb-3">
                     <label className="form-label fw-semibold">Email</label>
                     <input
@@ -25,7 +24,6 @@ function SignUp() {
                         className="form-control rounded-pill"
                     />
                 </div>
-
                 <div className="mb-3">
                     <label className="form-label fw-semibold">Password</label>
                     <input
@@ -34,11 +32,9 @@ function SignUp() {
                         className="form-control rounded-pill"
                     />
                 </div>
-
                 <button className="btn btn-primary w-100 rounded-pill py-2">
                     Sign Up
                 </button>
-
                 <div className="text-center mt-3">
                     <span className="text-muted">Already have an account? </span>
                     <Link to="/login" className="fw-semibold text-primary" style={{ textDecoration: "none" }}>
@@ -49,5 +45,4 @@ function SignUp() {
         </div>
     );
 }
-
 export default SignUp;

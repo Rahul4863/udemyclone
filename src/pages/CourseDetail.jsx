@@ -50,29 +50,21 @@ export default function CourseDetail() {
 
     return (
         <div className="course-detail">
-
-            {/* ================= HEADER ================= */}
             <section className="course-header text-white">
                 <div className="container py-4">
-
                     <span className="badge bg-warning text-dark mb-2">Bestseller</span>
-
                     <h2 className="fw-bold">
                         The Complete Full-Stack Web Development Bootcamp
                     </h2>
-
                     <p className="fs-5 opacity-75">
                         Become a Full-Stack Developer with HTML, CSS, JavaScript, Node, React & More…
                     </p>
-
                     <div className="d-flex gap-3 align-items-center small">
                         ⭐ 4.7 (459,864 ratings) • 1,200,000 students enrolled
                     </div>
-
                     <p className="mt-2">
                         Created by <span className="text-warning fw-semibold">Angela Yu</span>
                     </p>
-
                     <div className="small opacity-75">
                         🌐 Last updated November 2025 • ⏱️ English • Subtitles
                     </div>

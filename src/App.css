@@ -13,10 +13,9 @@ body {
   transition: 0.3s;
 }
 
-.card:hover {
+/* .card:hover {
   transform: scale(1.05);
-}
-
+} */
 html,
 body {
   height: 100%;
@@ -47,9 +46,6 @@ body {
   margin-top: auto;
 }
 
-
-
-/* Login full viewport */
 .login-wrapper {
   height: 100dvh;
   /* accurate viewport height */

@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-
 import NavBar from "./components/Navbar";
 import Banner from "./components/Banner";
 import CourseSlider from "./components/CourseSlider";
@@ -22,10 +21,14 @@ import CoursePlayer from "./pages/CoursePlayer";
 import Contact from "./components/Contact";
 import AllBlogs from "./pages/instructor/AllBlogs";
 import BlogDetails from "./components/BlogDetails";
-
-
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import TotalInstructor from "./pages/admin/TotalInstructor";
+import Category from "./pages/admin/Category";
+import SubCat from "./pages/admin/SubCat";
+import AdminProfile from "./pages/admin/AdminProfile";
 import "./App.css";
-
 const courses = [
   {
     title: "100 Days of Python Bootcamp",
@@ -162,11 +165,11 @@ function Home() {
     </>
   );
 }
-
 function App() {
   const location = useLocation();
   const hideLayout = location.pathname.startsWith("/instructor") ||
-    location.pathname.startsWith("/courseplayer");
+    location.pathname.startsWith("/courseplayer") ||
+    location.pathname.startsWith("/admin");
   return (
     <>
       {!hideLayout && <NavBar />}
@@ -183,7 +186,6 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<BlogList />} />
         <Route path="/blog/:id" element={<BlogDetails />} />
-
         {/* INSTRUCTOR PANEL */}
         <Route path="/instructor" element={<InstructorLayout />} >
           <Route index element={<Dashboard />} />
@@ -195,10 +197,18 @@ function App() {
           <Route path="allblogs" element={<AllBlogs />} />
           <Route path="instructor-create" element={<InstructorCreate />} />
         </Route>
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="total-instructor" element={<TotalInstructor />} />
+          <Route path="category" element={<Category />} />
+          <Route path="subcategory" element={<SubCat />} />
+          <Route path="profile" element={<AdminProfile />} />
+        </Route>
       </Routes>
       {!hideLayout && <Footer />}
     </>
   );
 }
-
 export default App;

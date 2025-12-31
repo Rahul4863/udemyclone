@@ -1,17 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
 function SignUp() {
     return (
-        <div className="d-flex justify-content-center align-items-center  bg-light">
-
+        <div className="d-flex justify-content-center align-items-center bg-light mt-3">
             <div className="card shadow p-4" style={{ width: "500px", borderRadius: "12px" }}>
-
                 <h2 className="text-center mb-2 fw-bold">Create Account</h2>
                 <p className="text-center text-muted mb-4">
                     Join us to start learning 🚀
                 </p>
-
                 <div className="mb-3">
                     <label className="form-label fw-semibold">Full Name</label>
                     <input

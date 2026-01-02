@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./Feed.css";
-
 import HeaderBar from "./HeaderBar";
 import ProfileSidebar from "./ProfileSidebar";
 import GameWidget from "./GameWidget";
@@ -241,8 +240,6 @@ const Feed = () => {
 
                 </div>
             </div>
-
-
             <CommentsModal
                 selectedPost={selectedPost}
                 setSelectedPost={setSelectedPost}
@@ -250,7 +247,6 @@ const Feed = () => {
                 setCommentInput={setCommentInput}
                 addCommentModal={addCommentModal}
             />
-
             <LikesModal
                 selectedLikePost={selectedLikePost}
                 setSelectedLikePost={setSelectedLikePost}

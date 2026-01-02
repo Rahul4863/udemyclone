@@ -31,7 +31,7 @@ import AdminProfile from "./pages/admin/AdminProfile";
 import AdminBlogs from "./pages/admin/AdminBlogs";
 import BlogCreateAdmin from "./pages/admin/BlogCreateAdmin";
 import BannerUpdate from "./pages/admin/BannerUpdate";
-import Feed from "./components/Feed";
+import Feed from "./components/Feed/Feed";
 import ChangePassword from "./pages/admin/ChangePassword";
 import "./App.css";
 const courses = [

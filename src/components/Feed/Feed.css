@@ -292,3 +292,38 @@ body {
     border-radius: 25px;
     padding: 6px 22px;
 }
+
+.num-box {
+    display: grid;
+    grid-template-columns: repeat(3, 65px);
+    grid-gap: 10px;
+    background: #002c78;
+    padding: 20px;
+    border-radius: 10px;
+    justify-content: center;
+}
+
+.num-tile {
+    height: 65px;
+    width: 65px;
+    background: white;
+    color: #002c78;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.num-tile:hover {
+    background: #dbe9ff;
+}
+
+.blank-tile {
+    background: transparent;
+    border: 2px dashed white;
+    cursor: default;
+}

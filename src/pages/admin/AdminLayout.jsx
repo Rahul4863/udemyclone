@@ -12,7 +12,7 @@ export default function AdminLayout() {
         <div className="instructor-wrapper">
             <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
                 <div className="sidebar-top">
-                    <h2 className="logo" style={{ cursor: "pointer" }} onClick={() => navigate("/")}>{collapsed ? "" : "AdminLMS"}</h2>
+                    <h2 className="logo" style={{ cursor: "pointer" }} onClick={() => navigate("/")}>{collapsed ? "" : "Admin"}</h2>
                     <button
                         className="toggle-btn"
                         onClick={() => setCollapsed(!collapsed)}

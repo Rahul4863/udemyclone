@@ -1,0 +1,12 @@
+const express = require("express");
+const AdminRouter = express.Router();
+const { createCategory, getAllCategory, getcategoryById, updateCategory, createSubCategory, getAllSubCategory, getSubcategoryById, updateSubCategory } = require("../controllers/AdminController");
+AdminRouter.post("/create-category", createCategory);
+AdminRouter.get("/get-all-category", getAllCategory);
+AdminRouter.get("/get-category/:id", getcategoryById);
+AdminRouter.put("/update-category/:id", updateCategory);
+AdminRouter.post("/create-subcategory", createSubCategory);
+AdminRouter.get("/get-all-subcategory", getAllSubCategory);
+AdminRouter.get("/get-subcategory/:id", getSubcategoryById);
+AdminRouter.put("/update-subcategory/:id", updateSubCategory);
+module.exports = AdminRouter;

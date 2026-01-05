@@ -11,13 +11,9 @@ function SubCat() {
         { id: 2, name: "Fashion" },
         { id: 3, name: "Books" }
     ];
-
-    // ADD OR UPDATE
     const handleSubmit = (e) => {
         e.preventDefault();
         if (subcategoryName.trim() === "" || category === "") return;
-
-        // -------- UPDATE MODE --------
         if (editId !== null) {
             const updated = subCategories.map(item =>
                 item.id === editId
@@ -28,7 +24,6 @@ function SubCat() {
             setSubCategories(updated);
             setEditId(null);
         }
-        // -------- ADD MODE --------
         else {
             const newSub = {
                 id: subCategories.length + 1,
@@ -88,7 +83,7 @@ function SubCat() {
             <div className="row">
 
                 {/* ---------- Add / Edit Subcategory Card ---------- */}
-                <div className="col-md-4">
+                <div className="col-md-12">
                     <div className="card shadow">
                         <div className="card-header bg-primary text-white">
                             <h5 className="mb-0">
@@ -135,9 +130,7 @@ function SubCat() {
                         </div>
                     </div>
                 </div>
-
-                {/* ---------- Table ---------- */}
-                <div className="col-md-8">
+                <div className="col-md-12">
                     <div className="card shadow">
                         <div className="card-header bg-dark text-white">
                             <h5 className="mb-0">Subcategory List</h5>

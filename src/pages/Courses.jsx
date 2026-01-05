@@ -30,28 +30,28 @@ function Courses() {
     const categories = ["Development", "Business", "Design", "IT & Software"];
     const subCategories = ["Web Development", "React", "Node", "Python", "Cloud", "AI"];
     const languages = ["English", "Hindi", "Spanish", "French"];
-const [hoveredCourse, setHoveredCourse] = useState(null);
-const [popupSide, setPopupSide] = useState("right");
+    const [hoveredCourse, setHoveredCourse] = useState(null);
+    const [popupSide, setPopupSide] = useState("right");
 
-// Decide popup left / right
-const handleMouseEnter = (e, index) => {
-  const card = e.currentTarget;
-  const rect = card.getBoundingClientRect();
-  const popupWidth = 430;
-  const gap = 18;
-  const safetyMargin = 30;
+    // Decide popup left / right
+    const handleMouseEnter = (e, index) => {
+        const card = e.currentTarget;
+        const rect = card.getBoundingClientRect();
+        const popupWidth = 430;
+        const gap = 18;
+        const safetyMargin = 30;
 
-  const availableRightSpace =
-    window.innerWidth - (rect.right + popupWidth + gap);
+        const availableRightSpace =
+            window.innerWidth - (rect.right + popupWidth + gap);
 
-  if (availableRightSpace < safetyMargin) {
-    setPopupSide("left");
-  } else {
-    setPopupSide("right");
-  }
+        if (availableRightSpace < safetyMargin) {
+            setPopupSide("left");
+        } else {
+            setPopupSide("right");
+        }
 
-  setHoveredCourse(index);
-};
+        setHoveredCourse(index);
+    };
 
     const courses = [
         {
@@ -299,84 +299,84 @@ const handleMouseEnter = (e, index) => {
                 <Col lg={8}>
                     <h3 className="fw-bold mb-3">All Courses</h3>
 
-                  <Row className="g-3">
-  {currentCourses.map((c, i) => (
-    <Col key={i} md={6}>
-      <div
-        className="position-relative"
-        onMouseEnter={(e) => handleMouseEnter(e, i)}
-        onMouseLeave={() => setHoveredCourse(null)}
-      >
-        <Card className="shadow-sm border-0 course-card">
-          <Card.Img src={c.img} className="course-img" />
+                    <Row className="g-3">
+                        {currentCourses.map((c, i) => (
+                            <Col key={i} md={6}>
+                                <div
+                                    className="position-relative"
+                                    onMouseEnter={(e) => handleMouseEnter(e, i)}
+                                    onMouseLeave={() => setHoveredCourse(null)}
+                                >
+                                    <Card className="shadow-sm border-0 course-card">
+                                        <Card.Img src={c.img} className="course-img" />
 
-          <Card.Body>
-            <h6 className="fw-bold">{c.title}</h6>
+                                        <Card.Body>
+                                            <h6 className="fw-bold">{c.title}</h6>
 
-            <p className="text-muted small">{c.trainer}</p>
+                                            <p className="text-muted small">{c.trainer}</p>
 
-            <p className="fw-bold mb-1">
-              ⭐ {c.rating}
-              <span className="text-muted small ms-2">
-                ({c.reviews})
-              </span>
-            </p>
+                                            <p className="fw-bold mb-1">
+                                                ⭐ {c.rating}
+                                                <span className="text-muted small ms-2">
+                                                    ({c.reviews})
+                                                </span>
+                                            </p>
 
-            <p className="fw-bold">
-              ₹{c.price}
-              <span className="text-muted text-decoration-line-through ms-2">
-                ₹{c.actual}
-              </span>
-            </p>
+                                            <p className="fw-bold">
+                                                ₹{c.price}
+                                                <span className="text-muted text-decoration-line-through ms-2">
+                                                    ₹{c.actual}
+                                                </span>
+                                            </p>
 
-            <span className="badge bg-primary me-2">{c.category}</span>
-            <span className="badge bg-success">{c.subCategory}</span>
-          </Card.Body>
-        </Card>
+                                            <span className="badge bg-primary me-2">{c.category}</span>
+                                            <span className="badge bg-success">{c.subCategory}</span>
+                                        </Card.Body>
+                                    </Card>
 
-        {hoveredCourse === i && (
-          <div className={`preview-popup shadow ${popupSide}`}>
-            <h5 className="fw-bold">{c.title}</h5>
+                                    {hoveredCourse === i && (
+                                        <div className={`preview-popup shadow ${popupSide}`}>
+                                            <h5 className="fw-bold">{c.title}</h5>
 
-            <div className="d-flex gap-2 mb-2">
-              <span className="badge bg-purple">Premium</span>
-              <span className="badge bg-success">Bestseller</span>
-            </div>
+                                            <div className="d-flex gap-2 mb-2">
+                                                <span className="badge bg-purple">Premium</span>
+                                                <span className="badge bg-success">Bestseller</span>
+                                            </div>
 
-            <p className="text-success small fw-bold">
-              Updated November 2025
-            </p>
+                                            <p className="text-success small fw-bold">
+                                                Updated November 2025
+                                            </p>
 
-            <p className="small text-muted">
-              62 total hours • All Levels • Subtitles
-            </p>
+                                            <p className="small text-muted">
+                                                62 total hours • All Levels • Subtitles
+                                            </p>
 
-            <p>
-              {c.desc ||
-                "Become a Full-Stack Developer with HTML, CSS, JS, Node, React & More…"}
-            </p>
+                                            <p>
+                                                {c.desc ||
+                                                    "Become a Full-Stack Developer with HTML, CSS, JS, Node, React & More…"}
+                                            </p>
 
-            <ul>
-              <li>Build real world projects</li>
-              <li>Latest technologies</li>
-              <li>Job ready skills</li>
-            </ul>
+                                            <ul>
+                                                <li>Build real world projects</li>
+                                                <li>Latest technologies</li>
+                                                <li>Job ready skills</li>
+                                            </ul>
 
-            <div className="d-flex align-items-center gap-2 mt-3">
-              <button className="btn btn-light border rounded-circle p-2 d-flex align-items-center justify-content-center">
-                <i className="bi bi-heart fs-5"></i>
-              </button>
+                                            <div className="d-flex align-items-center gap-2 mt-3">
+                                                <button className="btn btn-light border rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                                    <i className="bi bi-heart fs-5"></i>
+                                                </button>
 
-              <button className="btn btn-primary flex-grow-1">
-                Add to cart
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </Col>
-  ))}
-</Row>
+                                                <button className="btn btn-primary flex-grow-1">
+                                                    Add to cart
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </Col>
+                        ))}
+                    </Row>
 
 
                     {/* No Results */}

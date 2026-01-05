@@ -6,7 +6,7 @@ class Database {
             host: 'localhost',
             user: 'root',
             password: '',
-            database: 'dwebserv_ditn_online',
+            database: 'lms',
             connectionLimit: 10,
         });
         console.log("Database pool created successfully!");

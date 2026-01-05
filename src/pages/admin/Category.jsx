@@ -72,7 +72,7 @@ function Category() {
             <div className="row">
 
                 {/* ---------- Add / Edit Category Card ---------- */}
-                <div className="col-md-4">
+                <div className="col-md-12">
                     <div className="card shadow">
                         <div className="card-header bg-primary text-white">
                             <h5 className="mb-0">
@@ -102,7 +102,7 @@ function Category() {
                 </div>
 
                 {/* ---------- Category Table Card ---------- */}
-                <div className="col-md-8">
+                <div className="col-md-12">
                     <div className="card shadow">
                         <div className="card-header bg-dark text-white">
                             <h5 className="mb-0">Category List</h5>

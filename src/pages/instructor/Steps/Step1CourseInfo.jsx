@@ -33,17 +33,18 @@ export default function Step1CourseInfo({ course, setCourse, next }) {
 
                     {/* Instructor */}
                     <div className="mb-3">
-                        <label className="form-label fw-semibold">Select Instructor</label>
+                        <label className="form-label fw-semibold">Select level</label>
                         <select
                             className="form-select"
-                            value={course.instructor}
+                            value={course.level}
                             onChange={(e) =>
-                                setCourse({ ...course, instructor: e.target.value })
+                                setCourse({ ...course, level: e.target.value })
                             }
                         >
-                            <option value="">Choose Instructor</option>
-                            <option value="John Doe">John Doe</option>
-                            <option value="Jane Doe">Jane Doe</option>
+                            <option value="">Choose level</option>
+                            <option value="Beginners">Beginners</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
                         </select>
                     </div>
 
@@ -64,6 +65,7 @@ export default function Step1CourseInfo({ course, setCourse, next }) {
                             <option value="French">French</option>
                         </select>
                     </div>
+
 
                 </div>
 

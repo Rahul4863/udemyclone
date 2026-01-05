@@ -65,8 +65,6 @@ const updateCategory = async (req, res) => {
         return res.status(500).json({ status: false, message: "Internal Server Error" })
     }
 }
-
-// subcategory controllers
 const createSubCategory = async (req, res) => {
     const { subcategory_name, category_id } = req.body;
     if (!subcategory_name || !category_id) {
@@ -133,6 +131,9 @@ const updateSubCategory = async (req, res) => {
         return res.status(500).json({ status: false, message: "Internal Server Error" })
     }
 }
+
+
+
 module.exports = {
     createCategory,
     getAllCategory,

@@ -31,7 +31,6 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const userlogin = async (req, res) => {
     const { email, password } = req.body;
-
     if (!email || !password) {
         return res.status(400).json({
             status: false,
@@ -42,8 +41,7 @@ const userlogin = async (req, res) => {
         const user = await db.select(
             "tbl_users",
             "*",
-            `email='${email}'`,
-            true
+            `email='${email}'`
         );
         if (!user) {
             return res.status(404).json({
@@ -51,9 +49,14 @@ const userlogin = async (req, res) => {
                 message: "User not found"
             });
         }
-
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
+            return res.status(401).json({
+                status: false,
+                message: "Invalid credentials"
+            });
+        }
+        if (!user.role == '1') {
             return res.status(401).json({
                 status: false,
                 message: "Invalid credentials"
@@ -62,20 +65,18 @@ const userlogin = async (req, res) => {
         const accessToken = jwt.sign(
             { id: user.id, role: user.role },
             ACCESS_TOKEN_SECRET,
-            { expiresIn: "15m" }
+            { expiresIn: "2m" }
         );
         const refreshToken = jwt.sign(
             { id: user.id, role: user.role },
             REFRESH_TOKEN_SECRET,
             { expiresIn: "7d" }
         );
-
-        // 🍪 STORE TOKENS IN COOKIES
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: true,          // true in production (https)
+            secure: true,
             sameSite: "strict",
-            maxAge: 15 * 60 * 1000 // 15 minutes
+            maxAge: 15 * 60 * 1000
         });
 
         res.cookie("refreshToken", refreshToken, {
@@ -98,6 +99,72 @@ const userlogin = async (req, res) => {
         });
     }
 };
+const refreshAccessToken = (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({
+            status: false,
+            message: "Refresh token missing"
+        });
+    }
+
+    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({
+                status: false,
+                message: "Invalid refresh token"
+            });
+        }
+
+        const newAccessToken = jwt.sign(
+            { id: user.id },
+            ACCESS_TOKEN_SECRET,
+            { expiresIn: "15m" }
+        );
+
+        res.cookie("accessToken", newAccessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 15 * 60 * 1000
+        });
+
+        return res.status(200).json({
+            status: true,
+            message: "Access token refreshed"
+        });
+    });
+};
+const dashboard = async (req, res) => {
+    try {
+        return res.status(200).json({
+            status: true,
+            message: "Welcome to Dashboard",
+            userId: req.user.id
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Server error"
+        });
+    }
+};
+
+
+const logout = (req, res) => {
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    return res.status(200).json({
+        status: true,
+        message: "Logged out successfully"
+    });
+};
 module.exports = {
-    userRegister
+    userRegister,
+    userlogin,
+    refreshAccessToken,
+    logout,
+    dashboard
 }

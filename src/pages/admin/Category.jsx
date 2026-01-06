@@ -21,12 +21,9 @@ function Category() {
             toast.error("Unauthorized or failed to load categories");
         }
     };
-
     useEffect(() => {
         fetchCategories();
     }, []);
-
-    /* ================= CREATE / UPDATE CATEGORY ================= */
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -34,17 +31,14 @@ function Category() {
             toast.error("Category name is required");
             return;
         }
-
         setLoading(true);
-
         try {
             // 🔄 UPDATE
             if (editId) {
                 const res = await axiosAdmin.put(
                     `/admin/update-category/${editId}`,
-                    { name: categoryName }
+                    { category_name: categoryName }
                 );
-
                 if (res.data.status) {
                     toast.success(res.data.message || "Category updated");
                     setEditId(null);
@@ -80,10 +74,9 @@ function Category() {
             const res = await axiosAdmin.get(
                 `/admin/get-category/${row.id}`
             );
-
             if (res.data.status) {
                 setEditId(res.data.data.id);
-                setCategoryName(res.data.data.name);
+                setCategoryName(res.data.data.category_name);
             }
         } catch {
             toast.error("Failed to fetch category details");

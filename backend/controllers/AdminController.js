@@ -196,13 +196,30 @@ const createSubCategory = async (req, res) => {
 }
 const getAllSubCategory = async (req, res) => {
     try {
-        const data = await db.selectAll('tbl_subcategory', "*", "status = '1'", "", true);
-        return res.status(200).json({ status: true, data });
+        const sql = `
+            SELECT 
+                sc.id,
+                sc.subcategory_name,
+                sc.category_id,
+                c.category_name
+            FROM tbl_subcategory sc
+            INNER JOIN tbl_category c 
+                ON c.id = sc.category_id
+            WHERE sc.status = '1'
+        `;
+        const data = await db.queryAll(sql);
+        return res.status(200).json({
+            status: true,
+            data
+        });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: false, message: "Internal Server Error" });
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
+        });
     }
-}
+};
 const getSubcategoryById = async (req, res) => {
     const id = req.params.id;
     if (!id) {

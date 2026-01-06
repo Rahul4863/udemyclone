@@ -8,13 +8,19 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "suneditor/dist/css/suneditor.min.css";
+import { AdminAuthProvider } from "./context/AdminAuthContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AdminAuthProvider>
+        <App />
+        <ToastContainer position="top-right" autoClose={3000} />
+      </AdminAuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )

@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "react": "^19.2.0",
@@ -19,6 +20,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.11.0",
     "react-slick": "^0.31.0",
+    "react-toastify": "^11.0.5",
     "slick-carousel": "^1.8.1",
     "suneditor": "^2.47.8",
     "suneditor-react": "^3.6.1"

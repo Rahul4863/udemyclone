@@ -1,6 +1,116 @@
 const jwt = require("jsonwebtoken");
 const db = require("../config/db_Setting");
-// category controllers
+const bcrypt = require("bcrypt");
+const dotenv = require("dotenv");
+dotenv.config();
+const ACCESS_ADMIN_TOKEN_SECRET = process.env.ACCESS_ADMIN_TOKEN_SECRET;
+const Adminlogin = async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({
+            status: false,
+            message: "All fields are required"
+        });
+    }
+
+    try {
+        const user = await db.select(
+            "tbl_users",
+            "*",
+            `email='${email}'`
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                status: false,
+                message: "User not found"
+            });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({
+                status: false,
+                message: "Invalid credentials"
+            });
+        }
+
+        // ✅ FIX role check
+        if (user.role !== '2') {
+            return res.status(403).json({
+                status: false,
+                message: "Unauthorized access"
+            });
+        }
+        const token = jwt.sign(
+            { id: user.id, role: user.role },
+            ACCESS_ADMIN_TOKEN_SECRET,
+            { expiresIn: "8h" }
+        );
+        return res.status(200).json({
+            status: true,
+            message: "Admin logged in successfully",
+            token,
+            admin: {
+                id: user.id,
+                role: user.role,
+                email: user.email
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+const refreshAdminAccessToken = (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({
+            status: false,
+            message: "Refresh token missing"
+        });
+    }
+
+    jwt.verify(refreshToken, REFRESH_ADMIN_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({
+                status: false,
+                message: "Invalid refresh token"
+            });
+        }
+
+        const newAccessToken = jwt.sign(
+            { id: user.id },
+            ACCESS_ADMIN_TOKEN_SECRET,
+            { expiresIn: "15m" }
+        );
+
+        res.cookie("accessadminToken", newAccessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 15 * 60 * 1000
+        });
+
+        return res.status(200).json({
+            status: true,
+            message: "Access token refreshed"
+        });
+    });
+};
+const adminlogout = (req, res) => {
+    res.clearCookie("accessadminToken");
+    res.clearCookie("refreshadminToken");
+
+    return res.status(200).json({
+        status: true,
+        message: "Logged out successfully"
+    });
+};
 const createCategory = async (req, res) => {
     const { category_name } = req.body;
     if (!category_name) {
@@ -133,8 +243,8 @@ const updateSubCategory = async (req, res) => {
 }
 
 
-
 module.exports = {
+    Adminlogin,
     createCategory,
     getAllCategory,
     getcategoryById,
@@ -142,5 +252,8 @@ module.exports = {
     createSubCategory,
     getAllSubCategory,
     getSubcategoryById,
-    updateSubCategory
+    updateSubCategory,
+    refreshAdminAccessToken,
+    adminlogout,
+
 }

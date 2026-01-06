@@ -1,9 +1,27 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
 import { NavLink, Outlet } from "react-router-dom";
 import { FaHome, FaBook, FaUsers, FaChevronDown, FaImage } from "react-icons/fa";
+import { useAdminAuth } from "../../context/AdminAuthContext";
 import "./AdminDashboard.css";
 import { useNavigate } from "react-router-dom";
+import { baseurl } from "../../App";
 export default function AdminLayout() {
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                `${baseurl}/admin/admin-logout`,
+            );
+            logoutAdmin();
+            toast.success("Logged out successfully");
+            navigate("/admin/login", { replace: true });
+        } catch (error) {
+            console.error(error);
+            toast.error("Logout failed");
+        }
+    };
+    const { logoutAdmin } = useAdminAuth();
     const navigate = useNavigate();
     const [openCourseMenu, setOpenCourseMenu] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
@@ -120,16 +138,14 @@ export default function AdminLayout() {
                                     >
                                         Change Password
                                     </button>
-
                                     <button
+                                        type="button"
                                         className="dropdown-item logout"
-                                        onClick={() => {
-                                            setProfileOpen(false);
-                                            navigate("/admin/login");
-                                        }}
+                                        onClick={handleLogout}
                                     >
                                         Sign Out
                                     </button>
+
 
                                 </div>
                             )}

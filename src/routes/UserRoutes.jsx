@@ -13,6 +13,7 @@ import BlogList from "../components/BlogList";
 import BlogDetails from "../components/BlogDetails";
 import Contact from "../components/Contact";
 import Feed from "../components/Feed/Feed";
+import NotFound from "../pages/NotFound";
 
 const courses = [
     {
@@ -168,6 +169,7 @@ export default function UserRoutes({ hideLayout }) {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/blog" element={<BlogList />} />
                 <Route path="/blog/:id" element={<BlogDetails />} />
+                <Route path="*" element={<NotFound />} />
             </Routes>
             {!hideLayout && <Footer />}
         </>

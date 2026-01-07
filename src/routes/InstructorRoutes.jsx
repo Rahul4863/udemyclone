@@ -8,6 +8,7 @@ import BlogList from "../components/BlogList";
 import BlogCreate from "../pages/instructor/BlogCreate";
 import InstructorCreate from "../pages/instructor/InstructorCreate";
 import AllBlogs from "../pages/instructor/AllBlogs";
+import NotFound from "../pages/NotFound";
 export default function InstructorRoutes() {
     return (
         <Routes>
@@ -21,6 +22,7 @@ export default function InstructorRoutes() {
                 <Route path="allblogs" element={<AllBlogs />} />
                 <Route path="instructor-create" element={<InstructorCreate />} />
             </Route>
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }

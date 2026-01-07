@@ -11,16 +11,17 @@ import BlogCreateAdmin from "../pages/admin/BlogCreateAdmin";
 import BannerUpdate from "../pages/admin/BannerUpdate";
 import ChangePassword from "../pages/admin/ChangePassword";
 import AdminProtectedRoute from "./AdminProtectedRoute";
+import NotFound from "../pages/NotFound";
 
 export default function AdminRoutes() {
     return (
         <Routes>
-            {/* PUBLIC ROUTE */}
-            <Route path="/admin/login" element={<AdminLogin />} />
+            {/* PUBLIC */}
+            <Route path="login" element={<AdminLogin />} />
 
-            {/* PROTECTED ADMIN ROUTES */}
+            {/* PROTECTED */}
             <Route
-                path="/admin"
+                path="/"
                 element={
                     <AdminProtectedRoute>
                         <AdminLayout />
@@ -38,6 +39,9 @@ export default function AdminRoutes() {
                 <Route path="banner-update" element={<BannerUpdate />} />
                 <Route path="change-password" element={<ChangePassword />} />
             </Route>
+
+            {/* ADMIN 404 */}
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }

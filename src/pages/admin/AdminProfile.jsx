@@ -1,37 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import useAdminProfile from "../../hooks/useAdminProfile";
 
 function AdminProfile() {
-    const [profile, setProfile] = useState({
-        name: "Admin User",
-        email: "admin@example.com",
-        phone: "9876543210",
-        photo: "https://i.pravatar.cc/150"
-    });
+    const { profile, loading, error } = useAdminProfile();
+    const [formData, setFormData] = useState(null);
 
+    // Fill form when profile arrives
+    useEffect(() => {
+        if (profile) {
+            setFormData({
+                name: profile.name,
+                email: profile.email,
+                phone: profile.phone,
+                photo: profile.photo || "https://i.pravatar.cc/150"
+            });
+        }
+    }, [profile]);
+
+    if (loading) return <p className="text-center mt-5">Loading profile...</p>;
+    if (error) return <p className="text-danger text-center">{error}</p>;
+    if (!formData) return null;
     const handleChange = (e) => {
-        setProfile({ ...profile, [e.target.name]: e.target.value });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
-        if (file) setProfile({ ...profile, photo: URL.createObjectURL(file) });
+        if (file) {
+            setFormData({
+                ...formData,
+                photo: URL.createObjectURL(file)
+            });
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert("Profile Updated Successfully 🎉");
+        alert("Profile update API will be added next 🚀");
     };
 
     return (
         <>
-            {/* ----------- HEADER BANNER ----------- */}
+            {/* HEADER */}
             <div
                 style={{
                     height: "220px",
-                    background:
-                        "linear-gradient(to right, #4e73df, #1cc88a)",
-                    borderRadius: "0 0 30px 30px",
-                    boxShadow: "0 5px 15px rgba(0,0,0,0.2)"
+                    background: "linear-gradient(to right, #4e73df, #1cc88a)",
+                    borderRadius: "0 0 30px 30px"
                 }}
                 className="mb-5"
             >
@@ -43,36 +57,37 @@ function AdminProfile() {
                 </p>
             </div>
 
-            {/* ----------- PROFILE CARD ----------- */}
+            {/* PROFILE CARD */}
             <div className="container mb-5">
                 <div
                     className="card shadow-lg border-0 mx-auto p-4"
                     style={{
                         maxWidth: "900px",
                         marginTop: "-120px",
-                        borderRadius: "20px",
-                        background: "rgba(255,255,255,0.95)",
-                        backdropFilter: "blur(10px)"
+                        borderRadius: "20px"
                     }}
                 >
                     <div className="row align-items-center">
 
-                        {/* ---------- LEFT PROFILE PANEL ---------- */}
+                        {/* LEFT */}
                         <div className="col-lg-4 text-center border-end">
                             <img
-                                src={profile.photo}
+                                src={formData.photo}
                                 alt="profile"
                                 className="rounded-circle shadow-lg"
                                 style={{
                                     width: "150px",
                                     height: "150px",
-                                    objectFit: "cover",
-                                    border: "5px solid white"
+                                    objectFit: "cover"
                                 }}
                             />
 
-                            <h4 className="mt-3 fw-bold">{profile.name}</h4>
-                            <p className="text-muted">{profile.email}</p>
+                            <h4 className="mt-3 fw-bold">
+                                {formData.name}
+                            </h4>
+                            <p className="text-muted">
+                                {formData.email}
+                            </p>
 
                             <label className="btn btn-outline-primary rounded-pill px-4 mt-2">
                                 Change Photo
@@ -85,7 +100,7 @@ function AdminProfile() {
                             </label>
                         </div>
 
-                        {/* ---------- RIGHT FORM PANEL ---------- */}
+                        {/* RIGHT */}
                         <div className="col-lg-8">
                             <form onSubmit={handleSubmit} className="px-3">
 
@@ -98,18 +113,20 @@ function AdminProfile() {
                                             type="text"
                                             name="name"
                                             className="form-control form-control-lg"
-                                            value={profile.name}
+                                            value={formData.name}
                                             onChange={handleChange}
                                         />
                                     </div>
 
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-semibold">Email</label>
+                                        <label className="form-label fw-semibold">
+                                            Email
+                                        </label>
                                         <input
                                             type="email"
                                             name="email"
                                             className="form-control form-control-lg"
-                                            value={profile.email}
+                                            value={formData.email}
                                             onChange={handleChange}
                                         />
                                     </div>
@@ -123,7 +140,7 @@ function AdminProfile() {
                                         type="text"
                                         name="phone"
                                         className="form-control form-control-lg"
-                                        value={profile.phone}
+                                        value={formData.phone}
                                         onChange={handleChange}
                                     />
                                 </div>
@@ -140,4 +157,5 @@ function AdminProfile() {
         </>
     );
 }
+
 export default AdminProfile;

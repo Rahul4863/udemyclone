@@ -33,8 +33,6 @@ const Adminlogin = async (req, res) => {
                 message: "Invalid credentials"
             });
         }
-
-        // ✅ FIX role check
         if (user.role !== '2') {
             return res.status(403).json({
                 status: false,
@@ -131,7 +129,7 @@ const createCategory = async (req, res) => {
 }
 const getAllCategory = async (req, res) => {
     try {
-        const data = await db.selectAll('tbl_category', "*", "status = '1'", "", true);
+        const data = await db.selectAll('tbl_category', "*", "status = '1'", "");
         return res.status(200).json({ status: true, data });
     } catch (error) {
         console.log(error);
@@ -258,8 +256,47 @@ const updateSubCategory = async (req, res) => {
         return res.status(500).json({ status: false, message: "Internal Server Error" })
     }
 }
+const getProfileById = async (req, res) => {
+    const id = req.admin.id;
+    try {
+        const data = await db.select('tbl_users', '*', `id=${id}`, true);
+        if (!data) {
+            return res.status(404).json({ status: false, message: "Data not found" })
+        }
+        return res.status(200).json({ status: true, message: "Data fetched successfully", data })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: false, message: "Internal Server Error" })
+    }
+}
+const updateProfile = async (req, res) => {
+    const id = req.admin.id;
+    const { name, email, phone } = req.body;
+    if (!name || !email || !phone) {
+        return res.status(400).json({
+            status: false,
+            message: "All fields are required"
+        })
+    }
+    try {
+        const data = {
+            name,
+            email,
+            phone,
+            'updated_at': new Date()
+        }
+        await db.update('tbl_users', data, `id=${id}`);
+        return res.status(200).json({
+            status: true,
+            message: "data updated successfully",
 
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: false, message: "Internal Server Error" })
 
+    }
+}
 module.exports = {
     Adminlogin,
     createCategory,
@@ -272,5 +309,6 @@ module.exports = {
     updateSubCategory,
     refreshAdminAccessToken,
     adminlogout,
-
+    getProfileById,
+    updateProfile
 }

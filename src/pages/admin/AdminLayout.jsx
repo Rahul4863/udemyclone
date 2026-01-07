@@ -8,6 +8,7 @@ import "./AdminDashboard.css";
 import { useNavigate } from "react-router-dom";
 import { baseurl } from "../../App";
 export default function AdminLayout() {
+    const { logoutAdmin } = useAdminAuth();
     const handleLogout = async () => {
         try {
             await axios.post(
@@ -21,7 +22,6 @@ export default function AdminLayout() {
             toast.error("Logout failed");
         }
     };
-    const { logoutAdmin } = useAdminAuth();
     const navigate = useNavigate();
     const [openCourseMenu, setOpenCourseMenu] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
@@ -90,10 +90,8 @@ export default function AdminLayout() {
             <div className="content-area">
                 <div className="header-bar">
                     <h3 className="page-title">Admin Panel</h3>
-
                     <div className="header-right">
                         <span className="welcome-text">Welcome Admin</span>
-
                         <div className="profile-wrapper" style={{ position: "relative" }}>
                             <img
                                 src="https://i.pravatar.cc/40"
@@ -152,9 +150,6 @@ export default function AdminLayout() {
                         </div>
                     </div>
                 </div>
-
-
-                {/* Page Content */}
                 <Outlet />
             </div>
 

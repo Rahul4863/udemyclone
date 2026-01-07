@@ -1,6 +1,6 @@
 const express = require("express");
 const AdminRouter = express.Router();
-const { Adminlogin, refreshAdminAccessToken, createCategory, adminlogout, getAllCategory, getcategoryById, updateCategory, createSubCategory, getAllSubCategory, getSubcategoryById, updateSubCategory } = require("../controllers/AdminController");
+const { Adminlogin, refreshAdminAccessToken, createCategory, adminlogout, getAllCategory, getcategoryById, updateCategory, createSubCategory, getAllSubCategory, getSubcategoryById, updateProfile, updateSubCategory, getProfileById } = require("../controllers/AdminController");
 const { adminauthenticate } = require("../middleware/adminauth");
 AdminRouter.post("/admin-login", Adminlogin);
 AdminRouter.post("/create-category", adminauthenticate, createCategory);
@@ -12,5 +12,7 @@ AdminRouter.get("/get-all-subcategory", adminauthenticate, getAllSubCategory);
 AdminRouter.get("/get-subcategory/:id", adminauthenticate, getSubcategoryById);
 AdminRouter.put("/update-subcategory/:id", adminauthenticate, updateSubCategory);
 AdminRouter.post("/refresh-admin-access-token", refreshAdminAccessToken);
+AdminRouter.get("/get-profile", adminauthenticate, getProfileById);
+AdminRouter.put("/update-profile", adminauthenticate, updateProfile);
 AdminRouter.post("/admin-logout", adminlogout);
 module.exports = AdminRouter;

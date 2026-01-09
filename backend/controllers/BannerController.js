@@ -15,7 +15,7 @@ const BannerController = async (req, res) => {
             title,
             image: imagePath,
             created_at: new Date(),
-        }, true);
+        });
         res.status(200).json({ status: true, message: "Banner created successfully", image: imagePath });
     } catch (err) {
         res.status(500).json({ message: "Error uploading banner", error: err.toString() });

@@ -1,10 +1,13 @@
 const express = require("express");
 const AuthRouter = express.Router();
-const { userRegister, userlogin, refreshAccessToken, logout, dashboard } = require("../controllers/userAuthController");
+const { userRegister, userlogin, logout, BannerController,
+    getBannerController,
+    deleteBannerController,
+    EditBannerController,
+    updateBanner } = require("../controllers/userAuthController");
 const { authenticate } = require("../middleware/Auth");
 AuthRouter.post("/register", userRegister);
 AuthRouter.post("/login", userlogin);
-AuthRouter.post("/refreshAccessToken", refreshAccessToken);
+
 AuthRouter.post("/logout", logout);
-AuthRouter.get("/dashboard", authenticate, dashboard);
 module.exports = AuthRouter;

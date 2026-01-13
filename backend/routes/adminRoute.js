@@ -25,6 +25,6 @@ const uploadBanner = uploadSingleImage(allowedTypess, maxSizes, uploadBannerFold
 AdminRouter.post("/create-banner", uploadMiddleware(uploadBanner), adminauthenticate, BannerController);
 AdminRouter.put("/update-banner/:id", uploadMiddleware(uploadBanner), adminauthenticate, updateBanner);
 AdminRouter.get("/get-banner", adminauthenticate, getBannerController);
-AdminRouter.get("/get-banner/:id", adminauthenticate, getBannerController);
+AdminRouter.get("/get-banner/:id", adminauthenticate, EditBannerController);
 AdminRouter.delete("/delete-banner/:id", adminauthenticate, deleteBannerController);
 module.exports = AdminRouter;

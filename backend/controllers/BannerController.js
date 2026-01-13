@@ -1,8 +1,6 @@
 const db = require("../config/db_Setting");
 const path = require("path");
 const fs = require("fs");
-
-
 const BannerController = async (req, res) => {
     try {
         const { title } = req.body;
@@ -10,7 +8,7 @@ const BannerController = async (req, res) => {
         if (!title || !file) {
             return res.status(400).json({ status: false, message: "Title image are required" });
         }
-        const imagePath = file.path.replace(/\\/g, "/"); // normalize path
+        const imagePath = file.path.replace(/\\/g, "/");
         await db.insert("tbl_banner", {
             title,
             image: imagePath,
@@ -76,12 +74,10 @@ const updateBanner = async (req, res) => {
         const id = req.params.id;
         const { title } = req.body;
         const file = req.file;
-        const userId = req.user.id;
         if (!title) {
             return res.status(400).json({ status: false, message: "Title and Image are required" });
         } const existing = await db.select("tbl_banner", "*", `id='${id}'`);
         let imagePath = existing.image;
-        // If a new image is uploaded, delete the old one
         if (file) {
             const oldPath = path.join(__dirname, "..", imagePath);
             if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
@@ -91,12 +87,12 @@ const updateBanner = async (req, res) => {
             "tbl_banner",
             {
                 title,
-                image: imagePath
+                image: imagePath,
+                'updated_at': new Date()
 
             },
             `id='${id}'`
         );
-
         res.status(200).json({ status: true, message: "Banner updated successfully", image: imagePath });
     } catch (err) {
         res.status(500).json({ status: false, message: "Error updating banner", error: err.toString() });

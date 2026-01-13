@@ -26,8 +26,7 @@ import UserRoutes from "./routes/UserRoutes";
 import InstructorRoutes from "./routes/InstructorRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
 import NotFound from "./pages/NotFound";
-
-export const baseurl = "http://localhost:3000/api";
+export const baseurl = "http://localhost:3000";
 import "./App.css";
 
 function App() {
@@ -38,7 +37,6 @@ function App() {
     location.pathname.startsWith("/courseplayer") ||
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/feed");
-
   return (
     <Routes>
       <Route path="/*" element={<UserRoutes hideLayout={hideLayout} />} />

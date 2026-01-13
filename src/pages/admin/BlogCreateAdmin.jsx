@@ -18,7 +18,7 @@ const BlogCreateAdmin = () => {
     const fileRef = useRef(null);
     const [formData, setFormData] = useState({
         title: "",
-        Author: "",
+
         description: "",
         blockquotes: "",
         data: "",
@@ -56,26 +56,20 @@ const BlogCreateAdmin = () => {
             faq: [...prev.faq, { question: "", answer: "" }],
         }));
     };
-
     const removeFaqRow = (index) => {
         const updated = [...formData.faq];
         updated.splice(index, 1);
         setFormData((prev) => ({ ...prev, faq: updated }));
     };
-
-    // -------- SAVE AS DRAFT / PUBLISH ----------
     const handleAction = (status) => {
         const payload = { ...formData, status };
-
         console.log("FINAL BLOG DATA → ", payload);
-
         alert(
             status === "draft"
                 ? "Blog Saved as Draft 📝"
                 : "Blog Published Successfully 🎉"
         );
     };
-
     return (
         <div className="container py-4">
             <div className="card mb-4">
@@ -84,7 +78,7 @@ const BlogCreateAdmin = () => {
 
                     <button
                         className="btn btn-primary"
-                        onClick={() => navigate("/instructor/allblogs")}
+                        onClick={() => navigate("/admin/admin-blogs")}
                     >
                         All Blogs
                     </button>
@@ -136,17 +130,6 @@ const BlogCreateAdmin = () => {
                                     <option value="3">Cyber Security</option>
                                     <option value="4">AI & Machine Learning</option>
                                 </select>
-                            </div>
-
-                            <div className="col-lg-6 mb-3">
-                                <label className="form-label">Author</label>
-                                <input
-                                    name="Author"
-                                    value={formData.Author}
-                                    className="form-control"
-                                    onChange={handleChange}
-                                    required
-                                />
                             </div>
                         </div>
 

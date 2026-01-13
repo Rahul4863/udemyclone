@@ -12,7 +12,7 @@ export default function AdminLayout() {
     const handleLogout = async () => {
         try {
             await axios.post(
-                `${baseurl}/admin/admin-logout`,
+                `${baseurl}/api/admin/admin-logout`,
             );
             logoutAdmin();
             toast.success("Logged out successfully");

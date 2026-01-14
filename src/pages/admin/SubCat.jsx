@@ -11,7 +11,6 @@ function SubCat() {
     const [editId, setEditId] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    /* ================= FETCH CATEGORIES ================= */
     const fetchCategories = async () => {
         try {
             const res = await axiosAdmin.get("/admin/get-all-category");

@@ -2,6 +2,7 @@ const express = require("express");
 const AdminRouter = express.Router();
 const { Adminlogin, refreshAdminAccessToken, createCategory, adminlogout, getAllCategory, getcategoryById, updateCategory, createSubCategory, getAllSubCategory, getSubcategoryById, updateProfile, updateSubCategory, getProfileById } = require("../controllers/AdminController");
 const { BannerController, getBannerController, deleteBannerController, EditBannerController, updateBanner } = require("../controllers/BannerController");
+const { InsightInterestController, getInsightInterestController, deleteInsightInterestController, EditInsightInterestController, updateInsightInterestController } = require("../controllers/insightController");
 const { adminauthenticate } = require("../middleware/adminauth");
 const uploadSingleImage = require('../utils/uploadSingleImage');
 const uploadMiddleware = require('../middleware/uploadMiddleware');
@@ -27,4 +28,15 @@ AdminRouter.put("/update-banner/:id", uploadMiddleware(uploadBanner), adminauthe
 AdminRouter.get("/get-banner", adminauthenticate, getBannerController);
 AdminRouter.get("/get-banner/:id", adminauthenticate, EditBannerController);
 AdminRouter.delete("/delete-banner/:id", adminauthenticate, deleteBannerController);
+
+// insight interest controller
+const interestallowedTypes = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
+const interestmaxSize = 2 * 1024 * 1024;
+const interestuploadFolder = "uploads/insightpage-interest";
+const insightupload = uploadSingleImage(interestallowedTypes, interestmaxSize, interestuploadFolder, "photo");
+AdminRouter.post('/insightinterest', adminauthenticate, uploadMiddleware(insightupload), InsightInterestController)
+AdminRouter.get('/getinsightinterest', adminauthenticate, getInsightInterestController)
+AdminRouter.delete('/deleteinsightinterest/:id', adminauthenticate, deleteInsightInterestController)
+AdminRouter.get('/editinsightinterest/:id', adminauthenticate, EditInsightInterestController)
+AdminRouter.put('/updateinsightinterest/:id', adminauthenticate, uploadMiddleware(insightupload), updateInsightInterestController)
 module.exports = AdminRouter;

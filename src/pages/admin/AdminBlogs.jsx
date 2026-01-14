@@ -1,28 +1,25 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
+import axiosAdmin from "../../utils/axiosAdmin";
 
 function AdminBlogs() {
     const navigate = useNavigate();
-
-    // Dummy Blog Data (Replace with API later)
-    const blogs = [
-        {
-            id: 1,
-            title: "Cloud Computing vs Grid Computing",
-            category: "IT Solutions",
-            author: "Rahul",
-            date: "2025-02-10",
-        },
-        {
-            id: 2,
-            title: "Cyber Security Best Practices",
-            category: "Cyber Security",
-            author: "Admin",
-            date: "2025-01-25",
-        },
-    ];
-
+    const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const blogsFetch = async () => {
+        try {
+            const res = await axiosAdmin.get("/admin/getinsightinterest");
+            if (res.data.status) {
+                setBlogs(res.data.data);
+            }
+        } catch {
+        }
+    };
+    useEffect(() => {
+        blogsFetch();
+    }, []);
     const columns = [
         { name: "#", selector: (row, i) => i + 1, width: "70px" },
         { name: "Title", selector: (row) => row.title, sortable: true },

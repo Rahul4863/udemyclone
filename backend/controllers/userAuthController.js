@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET
 
 const userRegister = async (req, res) => {
     const { name, email, password } = req.body;
@@ -27,8 +29,7 @@ const userRegister = async (req, res) => {
         return res.status(500).json({ status: false, message: "Internal Server Error" });
     }
 }
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
 const userlogin = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {

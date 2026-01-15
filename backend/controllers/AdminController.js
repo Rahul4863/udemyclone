@@ -224,7 +224,7 @@ const getSubcategoryById = async (req, res) => {
         return res.status(400).json({ status: false, message: "Subcategory id is required" })
     }
     try {
-        const data = await db.select('tbl_subcategory', '*', `id=${id}`, true);
+        const data = await db.select('tbl_subcategory', '*', `id=${id}`);
         if (!data) {
             return res.status(404).json({ status: false, message: "Subcategory not found" })
         }

@@ -92,15 +92,10 @@ export default function Step4Payment({ payment, setPayment, back }) {
                         className="btn btn-success px-4"
                         onClick={() => alert("Course Published 🎉")}
                     >
-                        Publish Course
+                        Submit
                     </button>
 
-                    <button
-                        className="btn btn-warning px-4"
-                        onClick={() => alert("Draft Saved 📝")}
-                    >
-                        Save as Draft
-                    </button>
+
                 </div>
             </div>
         </div>

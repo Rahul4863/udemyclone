@@ -55,6 +55,17 @@ function AllCourses() {
         </button>
       ),
     },
+    {
+      name: "Add Section",
+      cell: (row) => (
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={() => navigate(`/instructor/course/${row.id}/section`)}
+        >
+          Add Section
+        </button>
+      ),
+    },
   ];
 
   // ===== SAMPLE DATA =====
@@ -108,8 +119,6 @@ function AllCourses() {
           responsive
         />
       </div>
-
-      {/* ===== TRENDING MODAL ===== */}
       <div
         className="modal fade"
         id="trendingModal"

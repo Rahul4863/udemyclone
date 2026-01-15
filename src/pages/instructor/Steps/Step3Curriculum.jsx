@@ -1,5 +1,4 @@
 import SunEditor from "suneditor-react";
-
 export default function Step3Curriculum({
     curriculum,
     setCurriculum,

@@ -50,16 +50,16 @@ const getInsightInterestController = async (req, res) => {
     try {
         const blogfetch = await db.queryAll(
             `SELECT 
-    tbl_blogs.*,
-    tbl_category.category_name,
-    tbl_users.name AS user_name
-FROM tbl_blogs
-LEFT JOIN tbl_category 
-    ON tbl_blogs.category_id = tbl_category.id
-LEFT JOIN tbl_users 
-    ON tbl_blogs.user_id = tbl_users.id
-ORDER BY tbl_blogs.id DESC
-`
+                tbl_blogs.*,
+                tbl_category.category_name,
+                tbl_users.name AS user_name
+            FROM tbl_blogs
+            LEFT JOIN tbl_category 
+                ON tbl_blogs.category_id = tbl_category.id
+            LEFT JOIN tbl_users 
+                ON tbl_blogs.user_id = tbl_users.id
+            ORDER BY tbl_blogs.id DESC
+            `
         );
         if (blogfetch.length === 0) {
             return res.status(404).json({ status: false, message: "No data found" });
@@ -139,8 +139,6 @@ const updateInsightInterestController = async (req, res) => {
             category_id,
             status_change,
             faq,
-            alt,
-            img_title,
             url_title,
         } = req.body;
         const file = req.file;
@@ -164,9 +162,8 @@ const updateInsightInterestController = async (req, res) => {
                 data,
                 category_id,
                 status_change,
-                alt,
+
                 faq: faq,
-                img_title,
                 image: imagePath,
                 url_title,
                 "updated_at": new Date(),

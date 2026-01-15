@@ -35,6 +35,7 @@ export default function AdminRoutes() {
                 <Route path="subcategory" element={<SubCat />} />
                 <Route path="admin-blogs" element={<AdminBlogs />} />
                 <Route path="admin-blog-create" element={<BlogCreateAdmin />} />
+                <Route path="admin-blog-create/:id" element={<BlogCreateAdmin />} />
                 <Route path="profile" element={<AdminProfile />} />
                 <Route path="banner-update" element={<BannerUpdate />} />
                 <Route path="change-password" element={<ChangePassword />} />

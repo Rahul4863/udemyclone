@@ -9,20 +9,22 @@ import BlogCreate from "../pages/instructor/BlogCreate";
 import InstructorCreate from "../pages/instructor/InstructorCreate";
 import AllBlogs from "../pages/instructor/AllBlogs";
 import NotFound from "../pages/NotFound";
+import Section from "../pages/instructor/Section";
 export default function InstructorRoutes() {
     return (
         <Routes>
-            <Route path="/instructor" element={<InstructorLayout />}>
+            <Route element={<InstructorLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="create" element={<CreateCourse />} />
                 <Route path="courses" element={<AllCourses />} />
                 <Route path="students" element={<Students />} />
+                <Route path="course/:id/section" element={<Section />} />
                 <Route path="blog" element={<BlogList />} />
                 <Route path="blog-create" element={<BlogCreate />} />
                 <Route path="allblogs" element={<AllBlogs />} />
                 <Route path="instructor-create" element={<InstructorCreate />} />
+                <Route path="*" element={<NotFound />} />
             </Route>
-            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }

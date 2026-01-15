@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
 import axiosAdmin from "../../utils/axiosAdmin";
-
 function AdminBlogs() {
     const navigate = useNavigate();
     const [blogs, setBlogs] = useState([]);
@@ -23,9 +22,43 @@ function AdminBlogs() {
     const columns = [
         { name: "#", selector: (row, i) => i + 1, width: "70px" },
         { name: "Title", selector: (row) => row.title, sortable: true },
-        { name: "Category", selector: (row) => row.category },
-        { name: "Author", selector: (row) => row.author },
-        { name: "Date", selector: (row) => row.date },
+        { name: "Category", selector: (row) => row.category_name },
+        { name: "Author", selector: (row) => row.user_name },
+        { name: "Date", selector: row => row.created_at?.split("T")[0] },
+        {
+            name: "Status",
+            cell: row => (
+                row.status_change === "1" ? (
+                    <span className="badge bg-warning text-dark">
+                        Save as Draft
+                    </span>
+                ) : (
+                    <span className="badge bg-success">
+                        Published
+                    </span>
+                )
+            )
+        },
+        {
+            name: "Actions",
+            selector: row => (
+                <div className="d-flex gap-2">
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => navigate(`/admin/admin-blog-create/${row.id}`)}
+                    >
+                        Edit
+                    </button>
+                    <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => navigate(`/admin/admin-blog-delete/${row.id}`)}
+                    >
+                        Delete
+                    </button>
+                </div>
+            )
+        }
+
     ];
 
     return (

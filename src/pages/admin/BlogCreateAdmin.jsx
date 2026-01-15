@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import SunEditor from "suneditor-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosAdmin from "../../utils/axiosAdmin";
 import { toast } from "react-toastify";
 import "suneditor/dist/css/suneditor.min.css";
-
+import { baseurl } from "../../App";
 const generateSlug = (title) => {
     return title
         .toLowerCase()
@@ -18,8 +18,10 @@ const generateSlug = (title) => {
 
 const BlogCreateAdmin = () => {
     const navigate = useNavigate();
+    const { id } = useParams();          // ✅ FIX
+    const isEdit = Boolean(id);          // ✅ detect edit mode
     const fileRef = useRef(null);
-
+    const IMAGE_BASE = baseurl + "/";
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -28,16 +30,12 @@ const BlogCreateAdmin = () => {
         url_title: "",
         description: "",
         data: "",
-        // alt: "",
-        // img_title: "",
         category_id: "",
         image: null,
         preview: "",
         faq: [],
         status_change: ""
     });
-
-    /* ---------------- FETCH CATEGORIES ---------------- */
     const fetchCategories = async () => {
         try {
             const res = await axiosAdmin.get("/admin/get-all-category");
@@ -48,12 +46,38 @@ const BlogCreateAdmin = () => {
             toast.error("Failed to load categories");
         }
     };
+    const fetchBlogById = async () => {
+        try {
+            const res = await axiosAdmin.get(`/admin/editinsightinterest/${id}`);
 
+            if (!res.data.status) {
+                toast.error("Blog not found");
+                return;
+            }
+
+            const blog = res.data.data; // ✅ API returns OBJECT
+            console.log(blog);
+
+            setFormData({
+                title: blog.title || "",
+                url_title: blog.url_title || "",
+                description: blog.description || "",
+                data: blog.data || "",
+                category_id: blog.category_id || "",
+                image: null,
+                preview: IMAGE_BASE + blog.image,
+                faq: blog.faq ? JSON.parse(blog.faq) : [],
+                status_change: blog.status_change || "",
+            });
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load blog");
+        }
+    };
     useEffect(() => {
         fetchCategories();
-    }, []);
-
-    /* ---------------- INPUT CHANGE ---------------- */
+        if (id) fetchBlogById(); // ✅ only for edit
+    }, [id]);
     const handleChange = (e) => {
         const { name, value, files } = e.target;
 
@@ -67,37 +91,31 @@ const BlogCreateAdmin = () => {
             setFormData((prev) => ({ ...prev, [name]: value }));
         }
     };
-
-    /* ---------------- FAQ HANDLERS ---------------- */
     const addFaqRow = () => {
         setFormData((prev) => ({
             ...prev,
             faq: [...prev.faq, { question: "", answer: "" }],
         }));
     };
-
     const handleFaqChange = (index, field, value) => {
         const updated = [...formData.faq];
         updated[index][field] = value;
         setFormData((prev) => ({ ...prev, faq: updated }));
     };
-
     const removeFaqRow = (index) => {
         const updated = [...formData.faq];
         updated.splice(index, 1);
         setFormData((prev) => ({ ...prev, faq: updated }));
     };
 
-    /* ---------------- SUBMIT BLOG ---------------- */
+    /* ---------------- SUBMIT (INSERT / UPDATE) ---------------- */
     const handleSubmit = async () => {
         if (!formData.title || !formData.category_id || !formData.status_change) {
             toast.error("Please fill required fields");
             return;
         }
-
         try {
             setLoading(true);
-
             const payload = new FormData();
             payload.append("title", formData.title);
             payload.append("url_title", formData.url_title);
@@ -105,34 +123,60 @@ const BlogCreateAdmin = () => {
             payload.append("data", formData.data);
             payload.append("category_id", formData.category_id);
             payload.append("status_change", formData.status_change);
-
-            if (formData.image) payload.append("photo", formData.image);
             payload.append("faq", JSON.stringify(formData.faq));
 
-            const res = await axiosAdmin.post(
-                "/admin/insightinterest",
-                payload,
-                { headers: { "Content-Type": "multipart/form-data" } }
-            );
+            if (formData.image) {
+                payload.append("photo", formData.image);
+            }
+
+            let res;
+
+            if (isEdit) {
+                // ✅ UPDATE → PUT
+                res = await axiosAdmin.put(
+                    `/admin/updateinsightinterest/${id}`,
+                    payload,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    }
+                );
+            } else {
+                // ✅ CREATE → POST
+                res = await axiosAdmin.post(
+                    "/admin/insightinterest",
+                    payload,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    }
+                );
+            }
 
             if (res.data.status) {
-                toast.success(res.data.message || "Blog created successfully 🎉");
+                toast.success(
+                    isEdit
+                        ? "Blog updated successfully 🎉"
+                        : "Blog created successfully 🎉"
+                );
                 navigate("/admin/admin-blogs");
             } else {
-                toast.error(res.data.message || "Failed to create blog");
+                toast.error(res.data.message || "Operation failed");
             }
-        } catch (err) {
-            toast.error("Server error while creating blog");
+        } catch (error) {
+            console.error(error);
+            toast.error("Server error");
         } finally {
             setLoading(false);
         }
     };
 
+
     return (
         <div className="container py-4">
             <div className="card mb-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Create Blog</h5>
+                    <h5 className="mb-0">
+                        {isEdit ? "Edit Blog" : "Create Blog"}
+                    </h5>
                     <button
                         className="btn btn-primary"
                         onClick={() => navigate("/admin/admin-blogs")}
@@ -159,7 +203,6 @@ const BlogCreateAdmin = () => {
                                     }
                                 />
                             </div>
-
                             <div className="col-lg-6 mb-3">
                                 <label>Blog URL</label>
                                 <input
@@ -300,7 +343,11 @@ const BlogCreateAdmin = () => {
                             onClick={handleSubmit}
                             disabled={loading}
                         >
-                            {loading ? "Submitting..." : "Submit"}
+                            {loading
+                                ? "Submitting..."
+                                : isEdit
+                                    ? "Update Blog"
+                                    : "Create Blog"}
                         </button>
                     </form>
                 </div>

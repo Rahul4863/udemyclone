@@ -3,10 +3,7 @@ const db = require("../config/db_Setting");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET
-
 const userRegister = async (req, res) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -44,6 +41,7 @@ const userlogin = async (req, res) => {
             "*",
             `email='${email}'`
         );
+
         if (!user) {
             return res.status(404).json({
                 status: false,
@@ -57,39 +55,26 @@ const userlogin = async (req, res) => {
                 message: "Invalid credentials"
             });
         }
-        if (!user.role == '1') {
-            return res.status(401).json({
+        if (user.role !== '1') {
+            return res.status(403).json({
                 status: false,
-                message: "Invalid credentials"
+                message: "Unauthorized access"
             });
         }
-        const accessToken = jwt.sign(
+        const token = jwt.sign(
             { id: user.id, role: user.role },
             ACCESS_TOKEN_SECRET,
-            { expiresIn: "2m" }
+            { expiresIn: "8h" }
         );
-        const refreshToken = jwt.sign(
-            { id: user.id, role: user.role },
-            REFRESH_TOKEN_SECRET,
-            { expiresIn: "7d" }
-        );
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-            maxAge: 15 * 60 * 1000
-        });
-
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        });
-
         return res.status(200).json({
             status: true,
-            message: "User logged in successfully"
+            message: "User logged in successfully",
+            token,
+            user: {
+                id: user.id,
+                role: user.role,
+                email: user.email
+            }
         });
 
     } catch (error) {

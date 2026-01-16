@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAdminAuth } from "../../context/AdminAuthContext";
@@ -10,7 +10,7 @@ function AdminLogin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-
+    const [params] = useSearchParams();
     const handleLogin = async () => {
         if (!email || !password) {
             toast.error("Email and password are required");
@@ -40,6 +40,13 @@ function AdminLogin() {
             setLoading(false);
         }
     };
+    useEffect(() => {
+        const key = params.get("key");
+
+        if (key !== "ADMIN123") {
+            navigate("/"); // ya 404
+        }
+    }, []);
 
     return (
         <div

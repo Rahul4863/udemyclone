@@ -142,7 +142,7 @@ const getcategoryById = async (req, res) => {
         return res.status(400).json({ status: false, message: "Category id is required" })
     }
     try {
-        const data = await db.select('tbl_category', '*', `id=${id}`, true);
+        const data = await db.select('tbl_category', '*', `id=${id}`);
         if (!data) {
             return res.status(404).json({ status: false, message: "Category not found" })
         }

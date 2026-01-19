@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 16, 2026 at 01:48 PM
+-- Generation Time: Jan 19, 2026 at 01:42 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -91,9 +91,16 @@ CREATE TABLE `tbl_category` (
 --
 
 INSERT INTO `tbl_category` (`id`, `category_name`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'webdevelopment', '1', '2026-01-03 14:28:16', '2026-01-13 10:54:15'),
-(2, 'Analysis', '1', '2026-01-03 14:31:36', '0000-00-00 00:00:00'),
-(3, 'test', '1', '2026-01-06 16:31:13', '2026-01-07 10:25:00');
+(1, 'Development', '1', '2026-01-03 14:28:16', '2026-01-19 15:07:34'),
+(2, 'Business', '1', '2026-01-03 14:31:36', '2026-01-19 15:08:19'),
+(3, 'Finance & Accounting', '1', '2026-01-06 16:31:13', '2026-01-19 15:27:51'),
+(4, 'IT & Software', '1', '2026-01-19 15:28:00', '0000-00-00 00:00:00'),
+(5, 'Office Productivity', '1', '2026-01-19 15:28:05', '0000-00-00 00:00:00'),
+(6, 'Personal Development', '1', '2026-01-19 15:28:13', '0000-00-00 00:00:00'),
+(7, 'Design', '1', '2026-01-19 15:28:25', '0000-00-00 00:00:00'),
+(8, 'Marketing', '1', '2026-01-19 15:28:33', '0000-00-00 00:00:00'),
+(9, 'Health & Fitness', '1', '2026-01-19 15:28:44', '0000-00-00 00:00:00'),
+(10, 'Music', '1', '2026-01-19 15:28:53', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -185,7 +192,62 @@ CREATE TABLE `tbl_subcategory` (
 --
 
 INSERT INTO `tbl_subcategory` (`id`, `category_id`, `subcategory_name`, `status`, `created_at`, `updated_at`) VALUES
-(1, 3, 'music', '1', '2026-01-06 17:22:12', '2026-01-15 12:43:26');
+(1, 1, 'Web Development', '1', '2026-01-06 17:22:12', '2026-01-19 15:30:36'),
+(2, 1, 'Mobile Development', '1', '2026-01-19 15:31:01', '0000-00-00 00:00:00'),
+(3, 1, 'Programming Languages', '1', '2026-01-19 15:31:11', '0000-00-00 00:00:00'),
+(4, 1, 'Game Development', '1', '2026-01-19 15:31:23', '0000-00-00 00:00:00'),
+(5, 1, 'Database Design & Development', '1', '2026-01-19 15:31:34', '0000-00-00 00:00:00'),
+(6, 1, 'Software Testing', '1', '2026-01-19 15:31:41', '0000-00-00 00:00:00'),
+(7, 2, 'Entrepreneurship', '1', '2026-01-19 15:33:39', '0000-00-00 00:00:00'),
+(8, 2, 'Communication', '1', '2026-01-19 15:33:52', '0000-00-00 00:00:00'),
+(9, 2, 'Management', '1', '2026-01-19 15:34:04', '0000-00-00 00:00:00'),
+(10, 2, 'Sales', '1', '2026-01-19 15:34:13', '0000-00-00 00:00:00'),
+(11, 2, 'Business Strategy', '1', '2026-01-19 15:34:23', '0000-00-00 00:00:00'),
+(12, 3, 'Accounting & Bookkeeping', '1', '2026-01-19 15:35:16', '0000-00-00 00:00:00'),
+(13, 3, 'Cryptocurrency & Blockchain', '1', '2026-01-19 15:35:26', '0000-00-00 00:00:00'),
+(14, 3, 'Finance', '1', '2026-01-19 15:35:35', '0000-00-00 00:00:00'),
+(15, 3, 'Financial Modeling & Analysis', '1', '2026-01-19 15:35:50', '0000-00-00 00:00:00'),
+(16, 3, 'Investing & Trading', '1', '2026-01-19 15:36:02', '0000-00-00 00:00:00'),
+(17, 4, 'IT Certifications', '1', '2026-01-19 15:43:06', '0000-00-00 00:00:00'),
+(18, 4, 'Network & Security', '1', '2026-01-19 15:43:29', '0000-00-00 00:00:00'),
+(19, 4, 'Hardware', '1', '2026-01-19 15:43:44', '0000-00-00 00:00:00'),
+(20, 4, 'Operating Systems & Servers', '1', '2026-01-19 15:43:56', '0000-00-00 00:00:00'),
+(21, 4, 'Other IT & Software', '1', '2026-01-19 15:44:04', '0000-00-00 00:00:00'),
+(22, 5, 'Microsoft', '1', '2026-01-19 15:45:29', '0000-00-00 00:00:00'),
+(23, 5, 'Apple', '1', '2026-01-19 15:45:37', '0000-00-00 00:00:00'),
+(24, 5, 'Google', '1', '2026-01-19 15:45:47', '0000-00-00 00:00:00'),
+(25, 5, 'SAP', '1', '2026-01-19 15:45:56', '0000-00-00 00:00:00'),
+(26, 5, 'Oracle', '1', '2026-01-19 15:46:08', '0000-00-00 00:00:00'),
+(27, 5, 'Other Office Productivity', '1', '2026-01-19 15:46:19', '0000-00-00 00:00:00'),
+(28, 6, 'Personal Transformation', '1', '2026-01-19 15:50:11', '0000-00-00 00:00:00'),
+(29, 6, 'Personal Productivity', '1', '2026-01-19 15:50:28', '0000-00-00 00:00:00'),
+(30, 6, 'Leadership', '1', '2026-01-19 15:50:39', '0000-00-00 00:00:00'),
+(31, 6, 'Career Development', '1', '2026-01-19 15:50:50', '0000-00-00 00:00:00'),
+(32, 6, 'Parenting & Relationships', '1', '2026-01-19 15:51:02', '0000-00-00 00:00:00'),
+(33, 7, 'Web Design', '1', '2026-01-19 15:51:55', '0000-00-00 00:00:00'),
+(34, 7, 'Graphic Design & Illustration', '1', '2026-01-19 15:52:02', '0000-00-00 00:00:00'),
+(35, 7, 'Design Tools', '1', '2026-01-19 15:52:11', '0000-00-00 00:00:00'),
+(36, 7, 'User Experience Design', '1', '2026-01-19 15:52:20', '0000-00-00 00:00:00'),
+(37, 7, 'Game Design', '1', '2026-01-19 15:52:28', '0000-00-00 00:00:00'),
+(38, 7, '3D & Animation', '1', '2026-01-19 15:52:38', '0000-00-00 00:00:00'),
+(39, 8, 'Digital Marketing', '1', '2026-01-19 15:53:34', '0000-00-00 00:00:00'),
+(40, 8, 'Search Engine Optimization', '1', '2026-01-19 15:53:42', '0000-00-00 00:00:00'),
+(41, 8, 'Social Media Marketing', '1', '2026-01-19 15:53:49', '0000-00-00 00:00:00'),
+(42, 8, 'Branding', '1', '2026-01-19 15:54:01', '0000-00-00 00:00:00'),
+(43, 8, 'Marketing Fundamentals', '1', '2026-01-19 15:54:17', '0000-00-00 00:00:00'),
+(44, 8, 'Marketing Analytics & Automation', '1', '2026-01-19 15:54:24', '0000-00-00 00:00:00'),
+(45, 9, 'Fitness', '1', '2026-01-19 15:55:22', '0000-00-00 00:00:00'),
+(46, 9, 'General Health', '1', '2026-01-19 15:55:28', '0000-00-00 00:00:00'),
+(47, 9, 'Sports', '1', '2026-01-19 15:55:34', '0000-00-00 00:00:00'),
+(48, 9, 'Nutrition & Diet', '1', '2026-01-19 15:55:40', '0000-00-00 00:00:00'),
+(49, 9, 'Yoga', '1', '2026-01-19 15:55:47', '0000-00-00 00:00:00'),
+(50, 9, 'Mental Health', '1', '2026-01-19 15:55:54', '0000-00-00 00:00:00'),
+(51, 10, 'Instruments', '1', '2026-01-19 15:56:30', '0000-00-00 00:00:00'),
+(52, 10, 'Music Production', '1', '2026-01-19 15:56:39', '0000-00-00 00:00:00'),
+(53, 10, 'Music Fundamentals', '1', '2026-01-19 15:56:52', '0000-00-00 00:00:00'),
+(54, 10, 'Vocal', '1', '2026-01-19 15:57:03', '0000-00-00 00:00:00'),
+(55, 10, 'Music Techniques', '1', '2026-01-19 15:57:12', '0000-00-00 00:00:00'),
+(56, 10, 'Music Software', '1', '2026-01-19 15:57:19', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -214,7 +276,8 @@ CREATE TABLE `tbl_users` (
 
 INSERT INTO `tbl_users` (`id`, `name`, `email`, `password`, `phone`, `address`, `photo`, `status`, `created_at`, `updated_at`, `role`, `description`) VALUES
 (1, 'Rahul Soni', 'rahulsoni123@gmail.com', '$2b$10$.pSut.ireGTcQKyL0j7k3eVd0lSNJ9..9FUPqJBe.oVo3ZqPjGx5u', '', '', '', '1', '2026-01-05 16:30:47', '0000-00-00 00:00:00', '1', ''),
-(2, 'Rahul Soni', 'rahulsoni7982@gmail.com', '$2b$10$.pSut.ireGTcQKyL0j7k3eVd0lSNJ9..9FUPqJBe.oVo3ZqPjGx5u', '', '', '', '1', '2026-01-06 16:30:47', '0000-00-00 00:00:00', '2', '');
+(2, 'Rahul Soni', 'rahulsoni7982@gmail.com', '$2b$10$.pSut.ireGTcQKyL0j7k3eVd0lSNJ9..9FUPqJBe.oVo3ZqPjGx5u', '', '', '', '1', '2026-01-06 16:30:47', '0000-00-00 00:00:00', '2', ''),
+(5, 'Rahul Soni', 'rahulsoni6352@gmail.com', '$2b$10$g/XUmd4uXk/IoN5Wt1tf/.F3VJXjMVj83h4IZx6uhaUKxgXKEPqIe', '', '', '', '1', '2026-01-19 09:52:12', '0000-00-00 00:00:00', '1', '');
 
 --
 -- Indexes for dumped tables
@@ -296,7 +359,7 @@ ALTER TABLE `tbl_blogs`
 -- AUTO_INCREMENT for table `tbl_category`
 --
 ALTER TABLE `tbl_category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `tbl_courses`
@@ -326,13 +389,13 @@ ALTER TABLE `tbl_sections`
 -- AUTO_INCREMENT for table `tbl_subcategory`
 --
 ALTER TABLE `tbl_subcategory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables

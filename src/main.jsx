@@ -1,26 +1,34 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+
+import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "suneditor/dist/css/suneditor.min.css";
-import { AdminAuthProvider } from "./context/AdminAuthContext";
+
+import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { BrowserRouter } from "react-router-dom";
+// ✅ CONTEXTS
+import { AuthProvider } from "./context/AuthContext";
+import { AdminAuthProvider } from "./context/AdminAuthContext";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <AdminAuthProvider>
-        <App />
-        <ToastContainer position="top-right" autoClose={3000} />
-      </AdminAuthProvider>
+      <AuthProvider>
+        <AdminAuthProvider>
+          <App />
+          <ToastContainer position="top-right" autoClose={3000} />
+        </AdminAuthProvider>
+
+      </AuthProvider>
+
     </BrowserRouter>
-  </StrictMode>,
-)
+  </StrictMode>
+);

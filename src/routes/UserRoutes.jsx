@@ -14,7 +14,7 @@ import BlogDetails from "../components/BlogDetails";
 import Contact from "../components/Contact";
 import Feed from "../components/Feed/Feed";
 import NotFound from "../pages/NotFound";
-
+import { useAuth } from "../context/AuthContext";
 const courses = [
     {
         title: "100 Days of Python Bootcamp",
@@ -141,18 +141,18 @@ const courses = [
 ];
 
 function Home() {
+    const { banner, loadingBanner } = useAuth();
     const featuredCourses = courses;
     const trendingOnly = courses.filter(c => c.trending === 1);
 
     return (
         <>
-            <Banner />
+            <Banner banner={banner} loadingBanner={loadingBanner} />
             <CourseSlider title="Featured Courses" courses={featuredCourses} />
             <CourseSlider title="Trending Courses" courses={trendingOnly} />
         </>
     );
 }
-
 export default function UserRoutes({ hideLayout }) {
     return (
         <>

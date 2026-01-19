@@ -1,18 +1,20 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Navbar, Container, Nav, Form, FormControl } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
-export default function NavBar() {
-
+function NavBar() {
     const navigate = useNavigate();
+    // const token = localStorage.getItem("usertoken");
     const [activeCat, setActiveCat] = useState(null);
     const [arrowLeft, setArrowLeft] = useState(0);
     const [showCart, setShowCart] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
+    const [categories, setCategories] = useState([]);
 
-
-    const [cartItems, setCartItems] = useState([
+    const { token, logout, user, loadingUser } = useAuth();
+    const [cartItems] = useState([
         {
             id: 1,
             title: "An Entire MBA in 1 Course",
@@ -32,29 +34,19 @@ export default function NavBar() {
     ]);
 
     const catRef = useRef({});
-    const categories = {
-        Development: [
-            "Web Development",
-            "Mobile Development",
-            "Programming Languages",
-            "Game Development",
-            "Database Design",
-            "Software Testing"
-        ],
-        Business: ["Entrepreneurship", "Strategy", "Sales", "Communication"],
-        "Finance & Accounting": ["Stock Market", "Crypto", "Banking", "Tax"],
-        "IT & Software": ["Networking", "Cyber Security", "AWS", "Cloud"],
-        "Office Productivity": ["Microsoft Office", "Excel", "PowerPoint"],
-        "Personal Development": ["Leadership", "Confidence", "Productivity"],
-        Design: ["UI/UX", "Graphic Design"],
-        Marketing: ["Digital Marketing", "SEO"],
-        "Health & Fitness": ["Yoga", "Gym", "Nutrition"],
-        Music: ["Guitar", "Piano", "Singing"]
-    };
-    const handleHover = (cat) => {
-        setActiveCat(cat);
-
-        const rect = catRef.current[cat].getBoundingClientRect();
+    useEffect(() => {
+        fetch("http://localhost:3000/api/view/categories-with-subcategories")
+            .then(res => res.json())
+            .then(data => {
+                if (data.status) {
+                    setCategories(data.data);
+                }
+            })
+            .catch(err => console.error("Category API error:", err));
+    }, []);
+    const handleHover = (catId) => {
+        setActiveCat(catId);
+        const rect = catRef.current[catId].getBoundingClientRect();
         setArrowLeft(rect.left + rect.width / 2);
     };
 
@@ -62,14 +54,11 @@ export default function NavBar() {
         <>
             <Navbar bg="white" expand="lg" className="shadow-sm sticky-top py-2">
                 <Container>
-
                     <Navbar.Brand as={Link} to="/" className="fw-bold fs-3">
                         LMS
                     </Navbar.Brand>
-
                     <Nav.Link className="ms-3 text-dark fw-semibold">Explore</Nav.Link>
-
-                    <Form className="mx-auto w-50">
+                    <Form className="mx-3 flex-grow-1">
                         <div className="search-wrapper">
                             <i className="bi bi-search"></i>
                             <FormControl
@@ -79,141 +68,133 @@ export default function NavBar() {
                             />
                         </div>
                     </Form>
-
                     <Nav className="align-items-center gap-3">
-                        <span
-                            className="nav-item-text"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => navigate("/instructor")}
-                        >
-                            Instructor
-                        </span>
+                        {token && (
+                            <>
+                                <span
+                                    className="nav-item-text"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => navigate("/instructor")}
+                                >
+                                    Instructor
+                                </span>
 
-                        <span
-                            className="nav-item-text"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => navigate("/mylearning")}
-                        >
-                            My learning
-                        </span>
-                        {/* <span className="nav-item-text">My learning</span> */}
+                                <span
+                                    className="nav-item-text"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => navigate("/mylearning")}
+                                >
+                                    My learning
+                                </span>
 
+                                <i className="bi bi-heart fs-4"></i>
+                            </>
+                        )}
 
-                        <i className="bi bi-heart fs-4"></i>
-                        {/* <i className="bi bi-cart fs-4"></i> */}
+                        {/* 🛒 CART (ALWAYS SHOW) */}
                         <div
                             className="cart-wrapper"
                             onMouseEnter={() => setShowCart(true)}
                             onMouseLeave={() => setShowCart(false)}
                         >
                             <i className="bi bi-cart fs-4 position-relative">
-
-                                {/* Badge Count */}
                                 <span className="cart-badge">
                                     {cartItems.length}
                                 </span>
                             </i>
 
-                            {/* CART DROPDOWN */}
                             {showCart && (
                                 <div className="cart-dropdown shadow">
-
-                                    {cartItems.length === 0 ? (
-                                        <p className="empty-text">Your cart is empty</p>
-                                    ) : (
-                                        <>
-                                            {cartItems.map(item => (
-                                                <div key={item.id} className="cart-item">
-                                                    <img src={item.img} alt="" />
-                                                    <div>
-                                                        <p className="title">{item.title}</p>
-                                                        <small>{item.author}</small>
-                                                        <p className="price">₹{item.price} <span className="old">₹{item.oldPrice}</span></p>
-                                                    </div>
-                                                </div>
-                                            ))}
-
-                                            <hr />
-
-                                            <div className="total">
-                                                Total: ₹
-                                                {cartItems.reduce((a, b) => a + b.price, 0)}
+                                    {cartItems.map(item => (
+                                        <div key={item.id} className="cart-item">
+                                            <img src={item.img} alt="" />
+                                            <div>
+                                                <p className="title">{item.title}</p>
+                                                <p className="price">₹{item.price}</p>
                                             </div>
-
-                                            <button
-                                                className="go-cart-btn"
-                                                onClick={() => navigate("/cart")}
-                                            >
-                                                Go to cart
-                                            </button>
-                                        </>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        <i
-                            className="bi bi-person fs-4"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => navigate("/login")}
-                        ></i>
-                        <div
-                            className="profile-wrapper"
-                            onClick={() => setShowProfile(prev => !prev)}
-                        >
-                            <img
-                                src="https://picsum.photos/40"
-                                className="rounded-circle profile-img"
-                                alt="profile"
-                                width="35"
-                                height="35"
-                            />
-                            {showProfile && (
-                                <div className="profile-dropdown shadow">
-                                    <p className="profile-name">
-                                        Hello, Rahul 👋
-                                    </p>
-                                    <hr />
+                                        </div>
+                                    ))}
                                     <button
-                                        className="profile-btn"
-                                        onClick={() => navigate("instructor/instructor-create")}
+                                        className="go-cart-btn"
+                                        onClick={() => navigate("/cart")}
                                     >
-                                        <i className="bi bi-person"></i> Edit Profile
-                                    </button>
-                                    <button
-                                        className="profile-btn"
-                                        onClick={() => navigate("/feed")}
-                                    >
-                                        <i className="bi bi-person"></i> Feed
-                                    </button>
-                                    <button
-                                        className="profile-btn logout"
-                                        onClick={() => navigate("/login")}
-                                    >
-                                        <i className="bi bi-box-arrow-right"></i> Sign Out
+                                        Go to cart
                                     </button>
                                 </div>
                             )}
                         </div>
+
+                        {/* 🔐 LOGIN ICON OR PROFILE */}
+                        {!token ? (
+                            <i
+                                className="bi bi-person fs-4"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => navigate("/login")}
+                            ></i>
+                        ) : (
+                            <div
+                                className="profile-wrapper"
+                                onClick={() => setShowProfile(prev => !prev)}
+                            >
+                                <img
+                                    src="https://picsum.photos/40"
+                                    className="rounded-circle profile-img"
+                                    alt="profile"
+                                    width="35"
+                                    height="35"
+                                />
+
+                                {showProfile && (
+                                    <div className="profile-dropdown shadow">
+                                        <p className="profile-name">
+                                            Hello, Rahul 👋
+                                        </p>
+                                        <hr />
+                                        <button
+                                            className="profile-btn"
+                                            onClick={() => navigate("instructor/instructor-create")}
+                                        >
+                                            <i className="bi bi-person"></i> Edit Profile
+                                        </button>
+                                        <button
+                                            className="profile-btn"
+                                            onClick={() => navigate("/feed")}
+                                        >
+                                            <i className="bi bi-person"></i> Feed
+                                        </button>
+                                        <button
+                                            className="profile-btn logout"
+                                            onClick={() => {
+                                                logout();
+                                                navigate("/login");
+                                                window.location.reload();
+                                            }}
+                                        >
+                                            <i className="bi bi-box-arrow-right"></i> Sign Out
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                     </Nav>
-
                 </Container>
             </Navbar>
 
             <div className="category-bar shadow-sm">
                 <div className="category-container">
-                    {Object.keys(categories).map(cat => (
+                    {categories.map(cat => (
                         <span
-                            key={cat}
-                            ref={(el) => (catRef.current[cat] = el)}
-                            className={`cat-item ${activeCat === cat ? "active" : ""}`}
-                            onMouseEnter={() => handleHover(cat)}
+                            key={cat.id}
+                            ref={(el) => (catRef.current[cat.id] = el)}
+                            className={`cat-item ${activeCat === cat.id ? "active" : ""}`}
+                            onMouseEnter={() => handleHover(cat.id)}
                             onMouseLeave={() => setActiveCat(null)}
                         >
-                            {cat}
+                            {cat.name}
                         </span>
                     ))}
+
                 </div>
             </div>
 
@@ -223,19 +204,20 @@ export default function NavBar() {
                     onMouseEnter={() => setActiveCat(activeCat)}
                     onMouseLeave={() => setActiveCat(null)}
                 >
-
-                    {/* Moving Arrow */}
                     <div className="triangle" style={{ left: arrowLeft }}></div>
-
                     <div className="mega-content">
-                        {categories[activeCat].map((t, i) => (
-                            <span key={i} className="mega-link">
-                                {t}
-                            </span>
-                        ))}
+                        {categories
+                            .find(cat => cat.id === activeCat)
+                            ?.subcategories.map(sub => (
+                                <span key={sub.id} className="mega-link">
+                                    {sub.name}
+                                </span>
+                            ))}
                     </div>
                 </div>
             )}
+
         </>
     );
 }
+export default NavBar;

@@ -9,6 +9,15 @@ const userRegister = async (req, res) => {
     if (!name || !email || !password) {
         return res.status(400).json({ status: false, message: "All fields are required" });
     }
+    const emailfound = await db.select(
+        "tbl_users",
+        "*",
+        `email='${email}'`
+    );
+    if (emailfound) {
+        return res.status(400).json({ status: false, message: "Email already exists" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         const data = {
@@ -86,21 +95,32 @@ const userlogin = async (req, res) => {
     }
 };
 
-
-// banner related controller
-
-const logout = (req, res) => {
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
-
-    return res.status(200).json({
-        status: true,
-        message: "Logged out successfully"
-    });
-};
+const getProfileById = async (req, res) => {
+    const id = req.user.id;
+    try {
+        const user = await db.select("tbl_users", "*", `id=${id}`);
+        if (!user) {
+            return res.status(404).json({
+                status: false,
+                message: "User not found"
+            });
+        }
+        return res.status(200).json({
+            status: true,
+            message: "User found",
+            user
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
+        });
+    }
+}
 module.exports = {
     userRegister,
     userlogin,
-    logout,
+    getProfileById
 
 }

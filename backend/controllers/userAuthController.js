@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const db = require("../config/db_Setting");
 const bcrypt = require("bcrypt");
+const path = require("path");
+const fs = require("fs");
 const dotenv = require("dotenv");
 dotenv.config();
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
@@ -35,7 +37,6 @@ const userRegister = async (req, res) => {
         return res.status(500).json({ status: false, message: "Internal Server Error" });
     }
 }
-
 const userlogin = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -94,7 +95,6 @@ const userlogin = async (req, res) => {
         });
     }
 };
-
 const getProfileById = async (req, res) => {
     const id = req.user.id;
     try {
@@ -118,9 +118,69 @@ const getProfileById = async (req, res) => {
         });
     }
 }
+const updateProfile = async (req, res) => {
+    const { name, email, phone, language, description } = req.body;
+    const file = req.file;
+    const id = req.user.id;
+
+    try {
+        const users = await db.select("tbl_users", "*", `id='${id}'`);
+        if (!users || users.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "User not found"
+            });
+        }
+        let imagePath = users.image ?? "";
+        if (file && imagePath.trim() !== "") {
+
+            const oldPath = path.join(
+                process.cwd(),
+                imagePath.replace(/^\//, "")
+            );
+            if (
+                fs.existsSync(oldPath) &&
+                fs.lstatSync(oldPath).isFile()
+            ) {
+                fs.unlinkSync(oldPath);
+            }
+        }
+        if (file) {
+            imagePath = file.path.replace(/\\/g, "/");
+        }
+        await db.update(
+            "tbl_users",
+            {
+                name,
+                email,
+                phone,
+                language,
+                description,
+                image: imagePath,
+                updated_at: new Date()
+            },
+            `id='${id}'`
+        );
+
+        return res.status(200).json({
+            status: true,
+            message: "Profile updated successfully",
+            image: imagePath
+        });
+
+    } catch (error) {
+        console.error("Update profile error:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
 module.exports = {
     userRegister,
     userlogin,
-    getProfileById
+    getProfileById,
+    updateProfile
 
 }

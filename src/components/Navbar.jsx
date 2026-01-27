@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Navbar, Container, Nav, Form, FormControl } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { baseurl } from "../App";
 import "./Navbar.css";
 
 function NavBar() {
@@ -35,7 +36,7 @@ function NavBar() {
 
     const catRef = useRef({});
     useEffect(() => {
-        fetch("http://localhost:3000/api/view/categories-with-subcategories")
+        fetch(`${baseurl}/api/view/categories-with-subcategories`)
             .then(res => res.json())
             .then(data => {
                 if (data.status) {
@@ -78,7 +79,6 @@ function NavBar() {
                                 >
                                     Instructor
                                 </span>
-
                                 <span
                                     className="nav-item-text"
                                     style={{ cursor: "pointer" }}
@@ -90,8 +90,6 @@ function NavBar() {
                                 <i className="bi bi-heart fs-4"></i>
                             </>
                         )}
-
-                        {/* 🛒 CART (ALWAYS SHOW) */}
                         <div
                             className="cart-wrapper"
                             onMouseEnter={() => setShowCart(true)}
@@ -123,8 +121,6 @@ function NavBar() {
                                 </div>
                             )}
                         </div>
-
-                        {/* 🔐 LOGIN ICON OR PROFILE */}
                         {!token ? (
                             <i
                                 className="bi bi-person fs-4"
@@ -132,42 +128,49 @@ function NavBar() {
                                 onClick={() => navigate("/login")}
                             ></i>
                         ) : (
-                            <div
-                                className="profile-wrapper"
-                                onClick={() => setShowProfile(prev => !prev)}
-                            >
+                            <div className="profile-wrapper">
                                 <img
                                     src="https://picsum.photos/40"
                                     className="rounded-circle profile-img"
                                     alt="profile"
                                     width="35"
                                     height="35"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowProfile(prev => !prev);
+                                    }}
                                 />
 
                                 {showProfile && (
-                                    <div className="profile-dropdown shadow">
+                                    <div
+                                        className="profile-dropdown shadow"
+                                        onClick={(e) => e.stopPropagation()} // 🔴 VERY IMPORTANT
+                                    >
                                         <p className="profile-name">
-                                            Hello, Rahul 👋
+                                            Hello, {user?.name} 👋
                                         </p>
                                         <hr />
+
                                         <button
                                             className="profile-btn"
-                                            onClick={() => navigate("instructor/instructor-create")}
+                                            onClick={() => navigate("/instructor/instructor-create")}
                                         >
                                             <i className="bi bi-person"></i> Edit Profile
                                         </button>
+
                                         <button
                                             className="profile-btn"
                                             onClick={() => navigate("/feed")}
                                         >
                                             <i className="bi bi-person"></i> Feed
                                         </button>
+
                                         <button
                                             className="profile-btn logout"
                                             onClick={() => {
                                                 logout();
                                                 navigate("/login");
-                                                window.location.reload();
                                             }}
                                         >
                                             <i className="bi bi-box-arrow-right"></i> Sign Out
@@ -175,6 +178,7 @@ function NavBar() {
                                     </div>
                                 )}
                             </div>
+
                         )}
 
                     </Nav>

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
-
+import { baseurl } from "../App";
 function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -22,7 +22,7 @@ function Login() {
 
         try {
             const res = await axios.post(
-                "http://localhost:3000/api/auth/login",
+                `${baseurl}/api/auth/login`,
                 { email, password },
                 { headers: { "Content-Type": "application/json" } }
             );

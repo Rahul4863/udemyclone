@@ -20,7 +20,8 @@ export default function InstructorRoutes() {
                 <Route path="students" element={<Students />} />
                 <Route path="course/:id/section" element={<Section />} />
                 <Route path="blog" element={<BlogList />} />
-                <Route path="blog-create" element={<BlogCreate />} />
+                <Route path="blog-create/" element={<BlogCreate />} />
+                <Route path="blog-create/:id" element={<BlogCreate />} />
                 <Route path="allblogs" element={<AllBlogs />} />
                 <Route path="instructor-create" element={<InstructorCreate />} />
                 <Route path="*" element={<NotFound />} />

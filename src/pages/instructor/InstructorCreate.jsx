@@ -1,20 +1,11 @@
 import React, { useState } from "react";
 import * as bootstrap from "bootstrap";
-
+import { useAuth } from "../../context/AuthContext";
+import axiosUser from "../../utils/axiosUser";
+import { toast } from "react-toastify";
+import { baseurl } from "../../App";
 export default function InstructorCreate() {
-
-    const [users, setUsers] = useState([
-        {
-            id: 1,
-            name: "Rahul Soni",
-            email: "rahul@gmail.com",
-            phone: "9876543210",
-            language: "English",
-            description: "Instructor of Web Development",
-            photo: ""
-        },
-    ]);
-
+    const { user, setUser } = useAuth();
     const [editData, setEditData] = useState({
         id: "",
         name: "",
@@ -22,17 +13,29 @@ export default function InstructorCreate() {
         phone: "",
         language: "",
         description: "",
-        photo: ""
+        photo: null
     });
-
+    const IMAGE_BASE = baseurl + "/";
     const openEditModal = (user) => {
-        setEditData(user);
-        const modal = new bootstrap.Modal(document.getElementById("editModal"));
+        setEditData({
+            id: user.id,
+            name: user.name || "",
+            email: user.email || "",
+            phone: user.phone || "",
+            language: user.language || "",
+            description: user.description || "",
+            photo: null
+        });
+
+        const modal = new bootstrap.Modal(
+            document.getElementById("editModal")
+        );
         modal.show();
     };
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
+
         if (name === "photo") {
             setEditData({ ...editData, photo: files[0] });
         } else {
@@ -40,21 +43,53 @@ export default function InstructorCreate() {
         }
     };
 
-    const updateUser = () => {
-        setUsers(users.map(u => u.id === editData.id ? editData : u));
-        bootstrap.Modal.getInstance(document.getElementById("editModal")).hide();
-    };
+    const updateUser = async () => {
+        try {
+            const formData = new FormData();
+            formData.append("name", editData.name);
+            formData.append("email", editData.email);
+            formData.append("phone", editData.phone);
+            formData.append("language", editData.language);
+            formData.append("description", editData.description);
 
+            if (editData.photo) {
+                formData.append("photo", editData.photo);
+            }
+
+            const res = await axiosUser.put("auth/update", formData);
+
+            // 🔥 THIS WILL NOW RUN
+            if (res.data.status === true) {
+                toast.success(res.data.message);
+
+                setUser(prev => ({
+                    ...prev,
+                    image: res.data.image,
+                    ...editData
+                }));
+
+                bootstrap.Modal.getInstance(
+                    document.getElementById("editModal")
+                ).hide();
+            }
+
+        } catch (error) {
+            console.error("Axios error:", error);
+
+            toast.error(
+                error?.response?.data?.message ||
+                error?.message ||
+                "Failed to update profile"
+            );
+        }
+    };
     return (
         <div className="container mt-4">
-
             <h2 className="mb-4 fw-bold">Instructor Details</h2>
-
             <div className="card shadow-lg border-0 rounded-4">
                 <div className="card-body">
-
                     <table className="table table-hover align-middle">
-                        <thead className="custom-thead">
+                        <thead>
                             <tr>
                                 <th>Avatar</th>
                                 <th>Name</th>
@@ -64,117 +99,118 @@ export default function InstructorCreate() {
                                 <th>Action</th>
                             </tr>
                         </thead>
-
                         <tbody>
-                            {users.map((u) => (
-                                <tr key={u.id}>
-                                    <td>
-                                        <img
-                                            src="https://via.placeholder.com/40"
-                                            className="rounded-circle"
-                                            alt="avatar"
-                                        />
-                                    </td>
-                                    <td className="fw-semibold">{u.name}</td>
-                                    <td>{u.email}</td>
-                                    <td>{u.phone}</td>
-                                    <td>
-                                        <span className="badge bg-primary px-3 py-2">
-                                            {u.language}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button className="btn btn-outline-primary btn-sm"
-                                            onClick={() => openEditModal(u)}>
-                                            Edit
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                            <tr>
+                                <td>
+                                    <img
+                                        src={IMAGE_BASE + user?.image}
+                                        className="rounded-circle"
+                                        width="40"
+                                    />
+                                </td>
+                                <td>{user?.name}</td>
+                                <td>{user?.email}</td>
+                                <td>{user?.phone}</td>
+                                <td>
+                                    <span className="badge bg-primary">
+                                        {user?.language}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button
+                                        className="btn btn-outline-primary btn-sm"
+                                        onClick={() => openEditModal(user)}
+                                    >
+                                        Edit
+                                    </button>
+                                </td>
+                            </tr>
                         </tbody>
-
                     </table>
-
                 </div>
             </div>
-            <div className="modal fade" id="editModal" tabIndex="-1" aria-hidden="true">
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content modal-design">
 
-                        <div className="modal-header modal-header-design">
-                            <h5 className="modal-title text-white">Edit Instructor</h5>
-                            <button className="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            {/* Modal */}
+            <div className="modal fade" id="editModal" tabIndex="-1">
+                <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Edit Instructor</h5>
+                            <button className="btn-close" data-bs-dismiss="modal"></button>
                         </div>
 
-                        <div className="modal-body p-4">
+                        <div className="modal-body">
+                            <input
+                                className="form-control mb-2"
+                                name="name"
+                                value={editData.name}
+                                onChange={handleChange}
+                                placeholder="Name"
+                            />
 
-                            <div className="row">
+                            <input
+                                className="form-control mb-2"
+                                name="email"
+                                value={editData.email}
+                                onChange={handleChange}
+                                placeholder="Email"
+                            />
 
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-semibold">Name</label>
-                                    <input type="text" className="form-control form-control-lg"
-                                        name="name" value={editData.name}
-                                        onChange={handleChange} />
-                                </div>
+                            <input
+                                className="form-control mb-2"
+                                name="phone"
+                                value={editData.phone}
+                                onChange={handleChange}
+                                placeholder="Phone"
+                            />
 
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-semibold">Email</label>
-                                    <input type="email" className="form-control form-control-lg"
-                                        name="email" value={editData.email}
-                                        onChange={handleChange} />
-                                </div>
+                            <select
+                                className="form-select mb-2"
+                                name="language"
+                                value={editData.language}
+                                onChange={handleChange}
+                            >
+                                <option value="">Select Language</option>
+                                <option>English</option>
+                                <option>Hindi</option>
+                                <option>Gujarati</option>
+                                <option>Marathi</option>
+                            </select>
 
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-semibold">Phone</label>
-                                    <input type="text" className="form-control form-control-lg"
-                                        name="phone" value={editData.phone}
-                                        onChange={handleChange} />
-                                </div>
+                            <textarea
+                                className="form-control mb-2"
+                                rows="3"
+                                name="description"
+                                value={editData.description}
+                                onChange={handleChange}
+                                placeholder="Description"
+                            />
 
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-semibold">Language</label>
-                                    <select className="form-select form-select-lg"
-                                        name="language" value={editData.language}
-                                        onChange={handleChange}>
-                                        <option>English</option>
-                                        <option>Hindi</option>
-                                        <option>Gujarati</option>
-                                        <option>Marathi</option>
-                                    </select>
-                                </div>
-
-                                <div className="col-12 mb-3">
-                                    <label className="form-label fw-semibold">Description</label>
-                                    <textarea className="form-control"
-                                        rows={3}
-                                        name="description"
-                                        value={editData.description}
-                                        onChange={handleChange}></textarea>
-                                </div>
-
-                                <div className="col-12">
-                                    <label className="form-label fw-semibold">Profile Photo</label>
-                                    <input type="file" className="form-control" name="photo" />
-                                </div>
-
-                            </div>
-
+                            <input
+                                type="file"
+                                className="form-control"
+                                name="photo"
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div className="modal-footer">
-                            <button className="btn btn-secondary px-4" data-bs-dismiss="modal">
+                            <button
+                                className="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
                                 Close
                             </button>
-
-                            <button className="btn btn-success px-4" onClick={updateUser}>
+                            <button
+                                className="btn btn-success"
+                                onClick={updateUser}
+                            >
                                 Update
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }

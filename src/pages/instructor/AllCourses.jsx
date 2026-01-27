@@ -1,21 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
+import axiosUser from "../../utils/axiosUser";
+import { toast } from "react-toastify";
 
 function AllCourses() {
   const navigate = useNavigate();
 
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isTrending, setIsTrending] = useState(false);
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const res = await axiosUser.get("/course/all");
+
+      if (res.data?.status) {
+        setCourses(res.data.data || []);
+      } else {
+        toast.error(res.data?.message || "Failed to fetch courses");
+      }
+    } catch (error) {
+      toast.error("Something went wrong while fetching courses");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  /* ================= TABLE COLUMNS ================= */
   const columns = [
     {
       name: "Course Title",
       selector: (row) => row.title,
-      sortable: true,
-    },
-    {
-      name: "Subtitle",
-      selector: (row) => row.subtitle,
       sortable: true,
     },
     {
@@ -34,7 +56,7 @@ function AllCourses() {
     },
     {
       name: "Students",
-      selector: (row) => row.students,
+      selector: (row) => row.students || 0,
       sortable: true,
       right: true,
     },
@@ -67,33 +89,32 @@ function AllCourses() {
       ),
     },
   ];
+  const handleSaveTrending = async () => {
+    try {
+      // Example API (adjust if needed)
+      await axiosUser.post("/course/update-trending", {
+        course_id: selectedCourse.id,
+        trending: isTrending,
+      });
 
-  // ===== SAMPLE DATA =====
-  const data = [
-    {
-      id: 1,
-      title: "Full Stack Web Development",
-      subtitle: "Learn MERN Stack",
-      status: "Published",
-      students: 1200,
-      trending: true,
-    },
-    {
-      id: 2,
-      title: "React Mastery",
-      subtitle: "Build Real Projects",
-      status: "Draft",
-      students: 540,
-      trending: true,
-    },
-  ];
-  const handleSaveTrending = () => {
-    console.log("Course ID:", selectedCourse.id);
-    console.log("Trending:", isTrending);
-    const modal = window.bootstrap.Modal.getInstance(
-      document.getElementById("trendingModal")
-    );
-    modal.hide();
+      toast.success("Trending status updated");
+
+      // update UI instantly
+      setCourses((prev) =>
+        prev.map((course) =>
+          course.id === selectedCourse.id
+            ? { ...course, trending: isTrending }
+            : course
+        )
+      );
+
+      const modal = window.bootstrap.Modal.getInstance(
+        document.getElementById("trendingModal")
+      );
+      modal.hide();
+    } catch (error) {
+      toast.error("Failed to update trending status");
+    }
   };
 
   return (
@@ -112,13 +133,17 @@ function AllCourses() {
       <div className="shadow-sm border rounded p-2 bg-white">
         <DataTable
           columns={columns}
-          data={data}
+          data={courses}
+          progressPending={loading}
           pagination
           highlightOnHover
           striped
           responsive
+          noDataComponent="No courses found"
         />
       </div>
+
+      {/* ================= TRENDING MODAL ================= */}
       <div
         className="modal fade"
         id="trendingModal"
@@ -137,7 +162,7 @@ function AllCourses() {
             </div>
 
             <div className="modal-body">
-              <p className="fw-semibold">
+              <p className="fw-semibold mb-2">
                 {selectedCourse?.title}
               </p>
 
@@ -164,6 +189,7 @@ function AllCourses() {
               <button
                 className="btn btn-primary"
                 onClick={handleSaveTrending}
+                disabled={!selectedCourse}
               >
                 Save Changes
               </button>
@@ -174,4 +200,5 @@ function AllCourses() {
     </div>
   );
 }
+
 export default AllCourses;

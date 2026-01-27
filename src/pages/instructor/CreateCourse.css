@@ -1,92 +1,57 @@
-/* ---------- Page Wrapper ---------- */
-.create-course-wrapper {
-    background: #f7f9ff;
-    min-height: 100vh;
-    padding-bottom: 50px;
+.create-course {
+    max-width: 1200px;
 }
 
-/* ---------- Section Card ---------- */
-.course-card {
+.card {
     border-radius: 14px;
     border: none;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, .08);
 }
 
-/* ---------- Heading ---------- */
-.create-title {
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    color: #333;
+.card h4 {
+    font-weight: 700;
+    color: #1f2937;
 }
 
-/* ---------- Step Pills ---------- */
-.nav-pills .nav-link {
-    border-radius: 30px;
-    padding: 10px 18px;
-    margin-right: 10px;
-    background: #e9ecff;
-    color: #555;
-    font-weight: 600;
-    transition: .3s;
+.form-control,
+.form-select {
+    border-radius: 10px;
+    padding: 10px 14px;
 }
 
-.nav-pills .nav-link.active {
-    background: #6c63ff;
-    color: #fff;
-    box-shadow: 0 8px 20px rgba(108, 99, 255, .4);
+.form-control:focus,
+.form-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 0.15rem rgba(99, 102, 241, 0.25);
 }
 
-.nav-pills .nav-link:hover {
-    background: #cfd6ff;
-}
-
-/* ---------- Buttons ---------- */
-.btn-primary {
-    background: #6c63ff;
-    border: none;
-    padding: 7px 16px;
-}
-
-.btn-primary:hover {
-    background: #4e45ff;
+.btn {
+    border-radius: 10px;
 }
 
 .btn-success {
-    padding: 7px 16px;
-}
-
-/* ---------- Section Box ---------- */
-.section-box {
-    background: #eef2ff;
-    border: 1px dashed #aab3ff;
-    border-radius: 8px;
-}
-
-/* ---------- Lecture Box ---------- */
-.lecture-box {
-    border-left: 5px solid #6c63ff;
-}
-
-/* ---------- Inputs ---------- */
-.form-control:focus,
-.form-select:focus {
-    box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, .25);
-    border-color: #6c63ff;
-}
-
-/* ---------- Add Buttons ---------- */
-.add-btn {
-    border-radius: 30px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border: none;
     font-weight: 600;
 }
 
-.add-btn:hover {
-    background: #ddd;
+.btn-success:hover {
+    opacity: 0.95;
 }
 
-/* ---------- Payment Highlight ---------- */
-.final-price-box {
-    background: #e8ffef;
-    border: 2px solid #28a745;
-    border-radius: 8px;
+.btn-outline-primary {
+    border-radius: 20px;
+    padding: 6px 14px;
+}
+
+.input-group .btn-danger {
+    border-radius: 0 10px 10px 0;
+}
+
+.sun-editor {
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+.sun-editor .se-toolbar {
+    border-bottom: 1px solid #e5e7eb;
 }

@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css";
+import axiosUser from "../../utils/axiosUser";
+import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
 const Section = () => {
     const [sections, setSections] = useState([]);
+    const { id: courseId } = useParams();
     const [sectionTitle, setSectionTitle] = useState("");
     const [sectionPosition, setSectionPosition] = useState("");
     const [activeSection, setActiveSection] = useState(null);
@@ -25,14 +29,35 @@ const Section = () => {
         type: "pdf",
         url: ""
     });
-    const addSection = () => {
+    const addSection = async () => {
         if (!sectionTitle.trim()) return;
-        const index = sections.length;
-        setSections([...sections, { title: sectionTitle, lectures: [] }]);
-        setOpenSection(index);
-        setSectionTitle("");
-        setSectionPosition("");
-        document.getElementById("sectionModalClose").click();
+
+        try {
+            const res = await axiosUser.post("/course/section", {
+                course_id: courseId,
+                title: sectionTitle,
+                position: sectionPosition || sections.length + 1,
+            });
+            if (res.data?.status) {
+                const newSection = {
+                    id: res.data.section_id || Date.now(), // fallback
+                    title: sectionTitle,
+                    lectures: [],
+                };
+
+                setSections([...sections, newSection]);
+                setOpenSection(sections.length);
+                setSectionTitle("");
+                setSectionPosition("");
+                toast.success(res.data?.message || "Section added successfully");
+
+                document.getElementById("sectionModalClose").click();
+            } else {
+                toast.error(res.data?.message || "Failed to add section");
+            }
+        } catch (error) {
+            toast.error("Something went wrong while adding section");
+        }
     };
 
     /* ================= ADD LECTURE ================= */
@@ -408,5 +433,4 @@ const Section = () => {
         </div>
     );
 };
-
 export default Section;

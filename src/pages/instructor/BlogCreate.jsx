@@ -1,11 +1,11 @@
-import React, { useRef, useState } from "react";
-// import { toast, ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
+import React, { useEffect, useRef, useState } from "react";
 import SunEditor from "suneditor-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+// import axiosUser from "../../utils/axiosUser";
+import { toast } from "react-toastify";
 import "suneditor/dist/css/suneditor.min.css";
-// import { useDebounce } from "../../context/useDebounce";
-
+import axiosUser from "../../utils/axiosUser";
+import { baseurl } from "../../App";
 const generateSlug = (title) => {
     return title
         .toLowerCase()
@@ -17,29 +17,68 @@ const generateSlug = (title) => {
         .replace(/-+$/, "");
 };
 
-const BlogCreate = () => {
+const BlogCreateAdmin = () => {
     const navigate = useNavigate();
+    const { id } = useParams();          // ✅ FIX
+    const isEdit = Boolean(id);          // ✅ detect edit mode
     const fileRef = useRef(null);
+    const IMAGE_BASE = baseurl + "/";
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         title: "",
-        Author: "",
+        url_title: "",
         description: "",
-        blockquotes: "",
         data: "",
-        alt: "",
-        img_title: "",
         category_id: "",
         image: null,
         preview: "",
-        url_title: "",
         faq: [],
+        status_change: ""
     });
+    const fetchCategories = async () => {
+        try {
+            const res = await axiosUser.get("/auth/getallcategory");
+            if (res.data.status) {
+                setCategories(res.data.data);
+            }
+        } catch {
+            toast.error("Failed to load categories");
+        }
+    };
+    const fetchBlogById = async () => {
+        try {
+            const res = await axiosUser.get(`/auth/editinsightinterest/${id}`);
 
-    // const debouncedTitle = useDebounce(formData.title, 600);
+            if (!res.data.status) {
+                toast.error("Blog not found");
+                return;
+            }
 
+            const blog = res.data.data; // ✅ API returns OBJECT
+            console.log(blog);
 
-
+            setFormData({
+                title: blog.title || "",
+                url_title: blog.url_title || "",
+                description: blog.description || "",
+                data: blog.data || "",
+                category_id: blog.category_id || "",
+                image: null,
+                preview: IMAGE_BASE + blog.image,
+                faq: blog.faq ? JSON.parse(blog.faq) : [],
+                status_change: blog.status_change || "",
+            });
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load blog");
+        }
+    };
+    useEffect(() => {
+        fetchCategories();
+        if (id) fetchBlogById(); // ✅ only for edit
+    }, [id]);
     const handleChange = (e) => {
         const { name, value, files } = e.target;
 
@@ -53,41 +92,92 @@ const BlogCreate = () => {
             setFormData((prev) => ({ ...prev, [name]: value }));
         }
     };
-
-    const handleFaqChange = (index, field, value) => {
-        const updated = [...formData.faq];
-        updated[index][field] = value;
-        setFormData((prev) => ({ ...prev, faq: updated }));
-    };
-
     const addFaqRow = () => {
         setFormData((prev) => ({
             ...prev,
             faq: [...prev.faq, { question: "", answer: "" }],
         }));
     };
-
+    const handleFaqChange = (index, field, value) => {
+        const updated = [...formData.faq];
+        updated[index][field] = value;
+        setFormData((prev) => ({ ...prev, faq: updated }));
+    };
     const removeFaqRow = (index) => {
         const updated = [...formData.faq];
         updated.splice(index, 1);
         setFormData((prev) => ({ ...prev, faq: updated }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    /* ---------------- SUBMIT (INSERT / UPDATE) ---------------- */
+    const handleSubmit = async () => {
+        if (!formData.title || !formData.category_id || !formData.status_change) {
+            toast.error("Please fill required fields");
+            return;
+        }
+        try {
+            setLoading(true);
+            const payload = new FormData();
+            payload.append("title", formData.title);
+            payload.append("url_title", formData.url_title);
+            payload.append("description", formData.description);
+            payload.append("data", formData.data);
+            payload.append("category_id", formData.category_id);
+            payload.append("status_change", formData.status_change);
+            payload.append("faq", JSON.stringify(formData.faq));
 
-        console.log("FORM SUBMITTED DATA → ", formData);
-        toast.success("Form Submitted Successfully (No API Called)");
+            if (formData.image) {
+                payload.append("photo", formData.image);
+            }
+
+            let res;
+
+            if (isEdit) {
+                // ✅ UPDATE → PUT
+                res = await axiosUser.put(
+                    `/auth/updateinsightinterest/${id}`,
+                    payload,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    }
+                );
+            } else {
+                // ✅ CREATE → POST
+                res = await axiosUser.post(
+                    "/auth/insightinterest",
+                    payload,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    }
+                );
+            }
+
+            if (res.data.status) {
+                toast.success(
+                    isEdit
+                        ? "Blog updated successfully 🎉"
+                        : "Blog created successfully 🎉"
+                );
+                navigate("/instructor/allblogs");
+            } else {
+                toast.error(res.data.message || "Operation failed");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Server error");
+        } finally {
+            setLoading(false);
+        }
     };
+
 
     return (
         <div className="container py-4">
-            {/* <ToastContainer /> */}
-
             <div className="card mb-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Create Blog</h5>
-
+                    <h5 className="mb-0">
+                        {isEdit ? "Edit Blog" : "Create Blog"}
+                    </h5>
                     <button
                         className="btn btn-primary"
                         onClick={() => navigate("/instructor/allblogs")}
@@ -96,73 +186,69 @@ const BlogCreate = () => {
                     </button>
                 </div>
 
-
                 <div className="card-body">
-                    <form onSubmit={handleSubmit}>
-
-                        {/* ===== Row 1 : Title + URL ===== */}
+                    <form>
+                        {/* TITLE + URL */}
                         <div className="row">
                             <div className="col-lg-6 mb-3">
-                                <label className="form-label">Blog Title</label>
+                                <label>Blog Title</label>
                                 <input
-                                    name="title"
-                                    value={formData.title}
                                     className="form-control"
-                                    onChange={(e) => {
-                                        const value = e.target.value;
+                                    value={formData.title}
+                                    onChange={(e) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            title: value,
-                                            url_title: generateSlug(value)
-                                        }));
-                                    }}
-                                    required
+                                            title: e.target.value,
+                                            url_title: generateSlug(e.target.value),
+                                        }))
+                                    }
                                 />
                             </div>
-
                             <div className="col-lg-6 mb-3">
-                                <label className="form-label">Blog URL</label>
+                                <label>Blog URL</label>
                                 <input
-                                    name="url_title"
-                                    value={formData.url_title}
                                     className="form-control"
-
+                                    value={formData.url_title}
+                                    readOnly
                                 />
                             </div>
                         </div>
 
-                        {/* ===== Row 2 : Category + Author ===== */}
+                        {/* CATEGORY + STATUS */}
                         <div className="row">
                             <div className="col-lg-6 mb-3">
-                                <label className="form-label">Blog Category</label>
+                                <label>Blog Category</label>
                                 <select
                                     name="category_id"
                                     value={formData.category_id}
                                     onChange={handleChange}
                                     className="form-control"
-                                    required
                                 >
                                     <option value="">-- Select Category --</option>
-                                    <option value="1">Technology</option>
-                                    <option value="2">Cloud</option>
-                                    <option value="3">Cyber Security</option>
-                                    <option value="4">AI & Machine Learning</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>
+                                            {cat.category_name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
                             <div className="col-lg-6 mb-3">
-                                <label className="form-label">Author</label>
-                                <input
-                                    name="Author"
-                                    value={formData.Author}
-                                    className="form-control"
+                                <label>Blog Status</label>
+                                <select
+                                    name="status_change"
+                                    value={formData.status_change}
                                     onChange={handleChange}
-                                    required
-                                />
+                                    className="form-control"
+                                >
+                                    <option value="">-- Select Status --</option>
+                                    <option value="1">Save As Draft</option>
+                                    <option value="2">Published</option>
+                                </select>
                             </div>
                         </div>
 
-
+                        {/* DESCRIPTION */}
                         <div className="mb-3">
                             <label>Description</label>
                             <textarea
@@ -171,13 +257,14 @@ const BlogCreate = () => {
                                 onChange={handleChange}
                                 className="form-control"
                                 rows="4"
-                            ></textarea>
+                            />
                         </div>
 
+                        {/* CONTENT */}
                         <div className="mb-3">
                             <label>Blog Content</label>
                             <SunEditor
-                                setContents={formData.data || ""}
+                                setContents={formData.data}
                                 onChange={(content) =>
                                     setFormData((prev) => ({ ...prev, data: content }))
                                 }
@@ -185,6 +272,7 @@ const BlogCreate = () => {
                             />
                         </div>
 
+                        {/* IMAGE */}
                         <div className="mb-3">
                             <label>Upload Image</label>
                             <input
@@ -194,7 +282,6 @@ const BlogCreate = () => {
                                 className="form-control"
                                 onChange={handleChange}
                             />
-
                             {formData.preview && (
                                 <img
                                     src={formData.preview}
@@ -205,9 +292,9 @@ const BlogCreate = () => {
                             )}
                         </div>
 
+                        {/* FAQ */}
                         <div className="mb-3">
                             <h5>FAQ Section</h5>
-
                             {formData.faq.map((item, i) => (
                                 <div className="row mb-2" key={i}>
                                     <div className="col">
@@ -220,7 +307,6 @@ const BlogCreate = () => {
                                             }
                                         />
                                     </div>
-
                                     <div className="col">
                                         <input
                                             className="form-control"
@@ -231,7 +317,6 @@ const BlogCreate = () => {
                                             }
                                         />
                                     </div>
-
                                     <div className="col-auto">
                                         <button
                                             type="button"
@@ -243,7 +328,6 @@ const BlogCreate = () => {
                                     </div>
                                 </div>
                             ))}
-
                             <button
                                 type="button"
                                 className="btn btn-secondary"
@@ -253,8 +337,18 @@ const BlogCreate = () => {
                             </button>
                         </div>
 
-                        <button className="btn btn-primary" type="submit">
-                            Submit Blog
+                        {/* SUBMIT */}
+                        <button
+                            type="button"
+                            className="btn btn-success"
+                            onClick={handleSubmit}
+                            disabled={loading}
+                        >
+                            {loading
+                                ? "Submitting..."
+                                : isEdit
+                                    ? "Update Blog"
+                                    : "Create Blog"}
                         </button>
                     </form>
                 </div>
@@ -263,4 +357,4 @@ const BlogCreate = () => {
     );
 };
 
-export default BlogCreate;
+export default BlogCreateAdmin;

@@ -76,7 +76,8 @@ const updateBanner = async (req, res) => {
         const file = req.file;
         if (!title) {
             return res.status(400).json({ status: false, message: "Title and Image are required" });
-        } const existing = await db.select("tbl_banner", "*", `id='${id}'`);
+        }
+        const existing = await db.select("tbl_banner", "*", `id='${id}'`);
         let imagePath = existing.image;
         if (file) {
             const oldPath = path.join(__dirname, "..", imagePath);

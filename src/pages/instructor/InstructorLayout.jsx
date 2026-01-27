@@ -1,17 +1,32 @@
-import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import { FaHome, FaBook, FaUsers, FaChevronDown } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { FaHome, FaBook, FaUsers } from "react-icons/fa";
 import "./Instructor.css";
-import { useNavigate } from "react-router-dom";
+
 export default function InstructorLayout() {
     const navigate = useNavigate();
-    const [openCourseMenu, setOpenCourseMenu] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
+
+    // 🔐 AUTH CHECK
+    useEffect(() => {
+        const token = localStorage.getItem("usertoken");
+        if (!token) {
+            navigate("/login", { replace: true });
+        }
+    }, [navigate]);
+
     return (
         <div className="instructor-wrapper">
             <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
                 <div className="sidebar-top">
-                    <h2 className="logo" style={{ cursor: "pointer" }} onClick={() => navigate("/")}>{collapsed ? "" : "LMS"}</h2>
+                    <h2
+                        className="logo"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => navigate("/")}
+                    >
+                        {collapsed ? "" : "LMS"}
+                    </h2>
+
                     <button
                         className="toggle-btn"
                         onClick={() => setCollapsed(!collapsed)}
@@ -19,79 +34,42 @@ export default function InstructorLayout() {
                         ☰
                     </button>
                 </div>
+
                 <ul>
                     <li>
-                        <NavLink
-                            to="/instructor"
-                            end
-                            className={({ isActive }) => isActive ? "active" : ""}
-                        >
+                        <NavLink to="/instructor" end>
                             <FaHome className="icon" />
                             {!collapsed && "Dashboard"}
                         </NavLink>
-                        <NavLink
-                            to="/instructor/instructor-create"
-                            end
-                            className={({ isActive }) => isActive ? "active" : ""}
-                        >
+
+                        <NavLink to="/instructor/instructor-create">
                             <FaUsers className="icon" />
                             {!collapsed && "Instructor"}
                         </NavLink>
-                        <NavLink
-                            to="/instructor/courses"
-                        >
+
+                        <NavLink to="/instructor/courses">
                             <FaBook className="icon" />
                             {!collapsed && "Courses"}
                         </NavLink>
                     </li>
-                    {/* <li
-                        className={`menu-title ${openCourseMenu ? "open" : ""}`}
-                        onClick={() => setOpenCourseMenu(!openCourseMenu)}
-                    >
-                        <div>
-                            <FaBook className="icon" />
-                            {!collapsed && "Courses"}
-                        </div>
 
-                        {!collapsed && (
-                            <FaChevronDown className={`arrow ${openCourseMenu ? "rotate" : ""}`} />
-
-                        )}
-                    </li>
-                    {!collapsed && (
-                        <ul className={`submenu ${openCourseMenu ? "show" : ""}`}>
-                            <li>
-                                <NavLink to="/instructor/create">
-                                    Create Course
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/instructor/courses">
-                                    All Courses
-                                </NavLink>
-                            </li>
-                        </ul>
-                    )} */}
                     <li>
-                        <NavLink
-                            to="/instructor/students"
-                        >
+                        <NavLink to="/instructor/students">
                             <FaUsers className="icon" />
                             {!collapsed && "Students"}
                         </NavLink>
                     </li>
+
                     <li>
-                        <NavLink
-                            to="/instructor/allblogs"
-                        >
+                        <NavLink to="/instructor/allblogs">
                             <FaUsers className="icon" />
                             {!collapsed && "Blogs"}
                         </NavLink>
                     </li>
                 </ul>
             </div>
-            <div className="content-area">
 
+            <div className="content-area">
                 {/* ===== HEADER BAR ===== */}
                 <div className="header-bar">
                     <h3 className="page-title">Instructor Panel</h3>
@@ -109,7 +87,6 @@ export default function InstructorLayout() {
                 {/* Page Content */}
                 <Outlet />
             </div>
-
         </div>
     );
 }

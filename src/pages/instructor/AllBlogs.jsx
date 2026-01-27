@@ -1,34 +1,67 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
-
+import axiosUser from "../../utils/axiosUser";
 function AllBlogs() {
     const navigate = useNavigate();
-
-    // Dummy Blog Data (Replace with API later)
-    const blogs = [
-        {
-            id: 1,
-            title: "Cloud Computing vs Grid Computing",
-            category: "IT Solutions",
-            author: "Rahul",
-            date: "2025-02-10",
-        },
-        {
-            id: 2,
-            title: "Cyber Security Best Practices",
-            category: "Cyber Security",
-            author: "Admin",
-            date: "2025-01-25",
-        },
-    ];
-
+    const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        fetchBlogs();
+    }, []);
+    const fetchBlogs = async () => {
+        try {
+            const res = await axiosUser.get("/auth/getinsightinterest");
+            if (res.data.status) {
+                setBlogs(res.data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching blogs:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
     const columns = [
         { name: "#", selector: (row, i) => i + 1, width: "70px" },
         { name: "Title", selector: (row) => row.title, sortable: true },
-        { name: "Category", selector: (row) => row.category },
-        { name: "Author", selector: (row) => row.author },
-        { name: "Date", selector: (row) => row.date },
+        { name: "Category", selector: (row) => row.category_name },
+        // { name: "Status", selector: (row) => row.status_change },
+        { name: "Author", selector: (row) => row.user_name },
+        { name: "Date", selector: row => row.created_at?.split("T")[0] },
+        {
+            name: "Status",
+            cell: row => (
+                row.status_change === "1" ? (
+                    <span className="badge bg-warning text-dark">
+                        Save as Draft
+                    </span>
+                ) : (
+                    <span className="badge bg-success">
+                        Published
+                    </span>
+                )
+            )
+        },
+        {
+            name: "Actions",
+            selector: row => (
+                <div className="d-flex gap-2">
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => navigate(`/instructor/blog-create/${row.id}`)}
+                    >
+                        Edit
+                    </button>
+                    {/* <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => navigate(`/instructor/blog-delete/${row.id}`)}
+                    >
+                        Delete
+                    </button> */}
+                </div>
+            )
+        }
+
     ];
 
     return (
@@ -55,6 +88,8 @@ function AllBlogs() {
                         pagination
                         highlightOnHover
                         striped
+                        progressPending={loading}
+                        noDataComponent="No blogs found"
                     />
                 </div>
             </div>
@@ -62,4 +97,5 @@ function AllBlogs() {
         </div>
     );
 }
+
 export default AllBlogs;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css";
 import axiosUser from "../../utils/axiosUser";
@@ -12,6 +12,11 @@ const Section = () => {
     const [activeSection, setActiveSection] = useState(null);
     const [activeLecture, setActiveLecture] = useState(null);
     const [openSection, setOpenSection] = useState(null);
+    const [isSavingLecture, setIsSavingLecture] = useState(false);
+    const [sectionMode, setSectionMode] = useState("add"); // add | edit
+    const [editingSectionId, setEditingSectionId] = useState(null);
+
+
     const [lectureData, setLectureData] = useState({
         title: "",
         type: "video",
@@ -27,58 +32,132 @@ const Section = () => {
     const [resourceData, setResourceData] = useState({
         title: "",
         type: "pdf",
-        url: ""
+        url: "",
+        file: null,
     });
-    const addSection = async () => {
+    const saveSection = async () => {
         if (!sectionTitle.trim()) return;
 
         try {
-            const res = await axiosUser.post("/course/section", {
-                course_id: courseId,
-                title: sectionTitle,
-                position: sectionPosition || sections.length + 1,
-            });
-            if (res.data?.status) {
-                const newSection = {
-                    id: res.data.section_id || Date.now(), // fallback
-                    title: sectionTitle,
-                    lectures: [],
-                };
+            let res;
 
-                setSections([...sections, newSection]);
-                setOpenSection(sections.length);
+            if (sectionMode === "add") {
+                // ✅ ADD
+                res = await axiosUser.post("/course/section", {
+                    course_id: courseId,
+                    title: sectionTitle,
+                    position: sectionPosition || sections.length + 1,
+                });
+            } else {
+                // ✏️ UPDATE
+                res = await axiosUser.put("/course/update-section", {
+                    section_id: editingSectionId,
+                    title: sectionTitle,
+                    position: sectionPosition,
+                });
+            }
+
+            if (res.data?.status) {
+                toast.success(
+                    sectionMode === "add"
+                        ? "Section added successfully"
+                        : "Section updated successfully"
+                );
+
+                await fetchSections();
+
                 setSectionTitle("");
                 setSectionPosition("");
-                toast.success(res.data?.message || "Section added successfully");
+                setEditingSectionId(null);
+                setSectionMode("add");
 
                 document.getElementById("sectionModalClose").click();
             } else {
-                toast.error(res.data?.message || "Failed to add section");
+                toast.error(res.data?.message || "Operation failed");
             }
-        } catch (error) {
-            toast.error("Something went wrong while adding section");
+        } catch (err) {
+            toast.error("Something went wrong");
         }
     };
 
-    /* ================= ADD LECTURE ================= */
-    const addLecture = () => {
-        if (!lectureData.title.trim()) return;
-        const updated = [...sections];
-        updated[activeSection].lectures.push({ ...lectureData });
-        setSections(updated);
+    useEffect(() => {
+        fetchSections();
+    }, []);
 
-        setLectureData({
-            title: "",
-            type: "video",
-            video_url: "",
-            article_content: "",
-            is_preview: false,
-            resources: [],
-            quiz: { title: "", questions: [] }
-        });
+    const fetchSections = async () => {
+        try {
+            const res = await axiosUser.get(`/course/allsection/${courseId}`);
 
-        document.getElementById("lectureModalClose").click();
+            if (res.data?.status) {
+                const normalized = res.data.data.map((sec) => ({
+                    ...sec,
+                    lectures: sec.lectures ?? [], // ✅ FIX
+                })).sort((a, b) => (a.position || 0) - (b.position || 0));
+                setSections(normalized);
+            } else {
+                setSections([]);
+            }
+        } catch (err) {
+            toast.error("Failed to load sections");
+        }
     };
+
+    const addLecture = async () => {
+        if (!lectureData.title.trim() || isSavingLecture) return;
+
+        try {
+            setIsSavingLecture(true);
+
+            const formData = new FormData();
+            formData.append("course_id", courseId);
+            formData.append("section_id", sections[activeSection].id);
+            formData.append("title", lectureData.title);
+            formData.append("type", lectureData.type);
+            formData.append("is_preview", lectureData.is_preview ? 1 : 0);
+
+            if (lectureData.type === "video" && lectureData.video_file) {
+                formData.append("video", lectureData.video_file);
+            }
+
+            if (lectureData.type === "article") {
+                formData.append("Article", lectureData.article_content);
+            }
+
+            if (lectureData.type === "quiz") {
+                formData.append("Quiz", JSON.stringify(lectureData.quiz));
+            }
+
+            const res = await axiosUser.post("/course/create-lecture", formData);
+
+            if (res.data?.status) {
+                toast.success("Lecture added successfully");
+
+                // ✅ SINGLE SOURCE OF TRUTH
+                await fetchSections();
+
+                setLectureData({
+                    title: "",
+                    type: "video",
+                    video_file: null,
+                    article_content: "",
+                    is_preview: false,
+                    resources: [],
+                    quiz: { title: "", questions: [] },
+                });
+
+                document.getElementById("lectureModalClose").click();
+            } else {
+                toast.error(res.data?.message || "Failed to add lecture");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Error while adding lecture");
+        } finally {
+            setIsSavingLecture(false);
+        }
+    };
+
+
 
     /* ================= QUIZ ================= */
     const addQuestion = () => {
@@ -95,16 +174,53 @@ const Section = () => {
     };
 
     /* ================= ADD RESOURCE ================= */
-    const addResource = () => {
-        if (!resourceData.title || !resourceData.url) return;
+    const addResource = async () => {
+        try {
+            if (!resourceData.title) {
+                toast.error("Resource title required");
+                return;
+            }
 
-        const updated = [...sections];
-        updated[activeSection].lectures[activeLecture].resources.push(resourceData);
-        setSections(updated);
+            const lecture = sections[activeSection].lectures[activeLecture];
 
-        setResourceData({ title: "", type: "pdf", url: "" });
-        document.getElementById("resourceModalClose").click();
+            const formData = new FormData();
+            formData.append("lecture_id", lecture.id);
+            formData.append("section_id", sections[activeSection].id);
+            formData.append("title", resourceData.title);
+            formData.append("type", resourceData.type);
+
+            if (resourceData.type === "link") {
+                formData.append("external_url", resourceData.url);
+            } else {
+                // 🔥 THIS MUST MATCH multer field name
+                formData.append("file", resourceData.file);
+            }
+
+            const res = await axiosUser.post(
+                "/course/create-lecture-resource",
+                formData
+            );
+
+            if (res.data?.status) {
+                toast.success("Resource added successfully");
+                await fetchSections();
+
+                setResourceData({
+                    title: "",
+                    type: "pdf",
+                    url: "",
+                    file: null,
+                });
+
+                document.getElementById("resourceModalClose").click();
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to upload resource");
+        }
     };
+
+
 
     return (
         <div className="container mt-4">
@@ -112,9 +228,20 @@ const Section = () => {
             {/* HEADER */}
             <div className="d-flex justify-content-between mb-3">
                 <h4>Course Content</h4>
-                <button className="btn btn-success" data-bs-toggle="modal" data-bs-target="#sectionModal">
+                <button
+                    className="btn btn-success"
+                    data-bs-toggle="modal"
+                    data-bs-target="#sectionModal"
+                    onClick={() => {
+                        setSectionMode("add");
+                        setEditingSectionId(null);
+                        setSectionTitle("");
+                        setSectionPosition("");
+                    }}
+                >
                     + Add Section
                 </button>
+
             </div>
 
             {/* SECTIONS */}
@@ -122,17 +249,57 @@ const Section = () => {
                 {sections.map((section, sIndex) => (
                     <div className="accordion-item mb-3" key={sIndex}>
                         <h2 className="accordion-header">
-                            <button
-                                className={`accordion-button ${openSection === sIndex ? "" : "collapsed"}`}
-                                data-bs-toggle="collapse"
-                                data-bs-target={`#section-${sIndex}`}
-                                onClick={() =>
-                                    setOpenSection(openSection === sIndex ? null : sIndex)
-                                }
-                            >
-                                ☰ Section {sIndex + 1}: {section.title}
-                            </button>
+                            <div className="d-flex align-items-center justify-content-between">
+
+                                {/* Accordion Toggle Button */}
+                                <button
+                                    className={`accordion-button ${openSection === sIndex ? "" : "collapsed"}`}
+                                    data-bs-toggle="collapse"
+                                    data-bs-target={`#section-${sIndex}`}
+                                    onClick={() =>
+                                        setOpenSection(openSection === sIndex ? null : sIndex)
+                                    }
+                                    style={{ flex: 1 }}
+                                >
+                                    ☰ Section {sIndex + 1}: {section.title}
+                                </button>
+
+                                {/* ✏️ EDIT BUTTON (SEPARATE BUTTON ✅) */}
+                                <button
+                                    type="button"
+                                    style={{ marginTop: "-21px" }}
+                                    className="btn btn-sm btn-outline-secondary ms-2"
+                                    title="Edit Section"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#sectionModal"
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
+
+                                        try {
+                                            setSectionMode("edit");
+                                            setEditingSectionId(section.id);
+
+                                            const res = await axiosUser.get(
+                                                `/course/edit-section/${section.id}`
+                                            );
+
+                                            if (res.data?.status) {
+                                                const sec = res.data.data;
+                                                setSectionTitle(sec.title);
+                                                setSectionPosition(sec.position);
+                                            }
+                                        } catch (err) {
+                                            toast.error("Failed to load section");
+                                        }
+                                    }}
+                                >
+                                    ✏️
+                                </button>
+
+
+                            </div>
                         </h2>
+
 
                         <div
                             id={`section-${sIndex}`}
@@ -157,21 +324,24 @@ const Section = () => {
                                         </li>
                                     )}
 
-                                    {section.lectures.map((lec, lIndex) => (
-                                        <li key={lIndex}
-                                            className="list-group-item d-flex justify-content-between align-items-center">
+                                    {section.lectures?.map((lec, lIndex) => (
+                                        <li
+                                            key={lec.id}
+                                            className="list-group-item d-flex justify-content-between align-items-center"
+                                        >
                                             <div>
                                                 ☰ {lec.title}
-                                                <span className="badge bg-secondary ms-2">
-                                                    {lec.type}
-                                                </span>
-                                                {lec.is_preview && (
+                                                <span className="badge bg-secondary ms-2">{lec.type}</span>
+
+                                                {lec.is_preview === 1 && (
                                                     <span className="badge bg-info ms-2">Preview</span>
                                                 )}
                                             </div>
+
                                             <div>
+                                                {/* ✅ ADD RESOURCE BUTTON */}
                                                 <button
-                                                    className="btn btn-secondary btn-sm me-2"
+                                                    className="btn btn-outline-secondary btn-sm me-2"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#resourceModal"
                                                     onClick={() => {
@@ -179,14 +349,17 @@ const Section = () => {
                                                         setActiveLecture(lIndex);
                                                     }}
                                                 >
-                                                    Resources ({lec.resources.length})
+                                                    Resources ({lec.resources?.length || 0})
                                                 </button>
+
+                                                {/* (optional) delete lecture */}
                                                 <button className="btn btn-danger btn-sm">
                                                     Delete
                                                 </button>
                                             </div>
                                         </li>
                                     ))}
+
                                 </ul>
 
                             </div>
@@ -199,7 +372,12 @@ const Section = () => {
             <div className="modal fade" id="sectionModal">
                 <div className="modal-dialog">
                     <div className="modal-content">
-                        <div className="modal-header"><h5>Add Section</h5></div>
+                        <div className="modal-header">
+                            <h5>
+                                {sectionMode === "add" ? "Add Section" : "Edit Section"}
+                            </h5>
+                        </div>
+
                         <div className="modal-body">
                             <input
                                 className="form-control"
@@ -207,6 +385,7 @@ const Section = () => {
                                 value={sectionTitle}
                                 onChange={(e) => setSectionTitle(e.target.value)}
                             />
+
                             <input
                                 className="form-control mt-2"
                                 type="number"
@@ -215,17 +394,27 @@ const Section = () => {
                                 onChange={(e) => setSectionPosition(e.target.value)}
                             />
                         </div>
+
                         <div className="modal-footer">
-                            <button id="sectionModalClose" className="btn btn-secondary" data-bs-dismiss="modal">
+                            <button
+                                id="sectionModalClose"
+                                className="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
                                 Cancel
                             </button>
-                            <button className="btn btn-primary" onClick={addSection}>
-                                Save Section
+
+                            <button
+                                className="btn btn-primary"
+                                onClick={saveSection}
+                            >
+                                {sectionMode === "add" ? "Save Section" : "Update Section"}
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
+
 
             {/* ================= ADD LECTURE MODAL ================= */}
             <div className="modal fade" id="lectureModal">
@@ -322,9 +511,16 @@ const Section = () => {
                             <button id="lectureModalClose" className="btn btn-secondary" data-bs-dismiss="modal">
                                 Cancel
                             </button>
-                            <button className="btn btn-primary" onClick={addLecture}>
-                                Save Lecture
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                disabled={isSavingLecture}
+                                onClick={addLecture}
+                            >
+                                {isSavingLecture ? "Saving..." : "Save Lecture"}
                             </button>
+
+
                         </div>
                     </div>
                 </div>
@@ -338,7 +534,7 @@ const Section = () => {
 
                         <div className="modal-body">
                             {/* Resource Title */}
-                            <table class="table table-bordered">
+                            <table className="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Title</th>
@@ -350,7 +546,7 @@ const Section = () => {
                                     <tr>
                                         <td>Slides</td>
                                         <td><a href="#">slides.pdf</a></td>
-                                        <td><button class="btn btn-sm btn-danger">Delete</button></td>
+                                        <td><button className="btn btn-sm btn-danger">Delete</button></td>
                                     </tr>
                                 </tbody>
                             </table>

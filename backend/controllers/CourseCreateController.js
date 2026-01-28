@@ -131,4 +131,161 @@ const createSection = async (req, res) => {
         });
     }
 }
-module.exports = { createCourse, getSubcategories, getAllCourses, createSection };
+const editSection = async (req, res) => {
+    const id = req.params.id;
+    const data = await db.select('tbl_sections', '*', `id='${id}'`)
+    if (!data) {
+        return res.status(404).json({
+            status: false,
+            message: "Section not found",
+        })
+    }
+    return res.status(200).json({
+        status: true,
+        data
+    })
+}
+const updateSection = async (req, res) => {
+    // const id = req.params.id;
+    try {
+        const { section_id, title, position } = req.body;
+        if (!title || !position) {
+            return res.status(400).json({
+                status: false,
+                message: "All fields are required",
+            });
+        }
+        const insertData = {
+            title,
+            position,
+            'updated_at': new Date(),
+        };
+        await db.update("tbl_sections", insertData, `id='${section_id}'`);
+        return res.status(201).json({
+            status: true,
+            message: "Section updated successfully",
+        });
+    } catch (error) {
+        console.error("UPDATE SECTION ERROR:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error",
+        });
+    }
+}
+const GetAllSection = async (req, res) => {
+    try {
+        const course_id = req.params.id;
+        const instructor_id = req.user.id;
+
+        // 1️⃣ Get sections
+        const sections = await db.selectAll(
+            "tbl_sections",
+            "*",
+            `course_id='${course_id}' AND instructor_id='${instructor_id}'`,
+            "ORDER BY position ASC"
+        );
+
+        if (!sections || sections.length === 0) {
+            return res.status(200).json({
+                status: true,
+                data: [],
+            });
+        }
+
+        // 2️⃣ Attach lectures to each section
+        for (let section of sections) {
+            const lectures = await db.selectAll(
+                "tbl_lectures",
+                "*",
+                `section_id='${section.id}'`,
+                "ORDER BY id ASC"
+            );
+
+            section.lectures = lectures || []; // ✅ VERY IMPORTANT
+        }
+
+        return res.status(200).json({
+            status: true,
+            message: "Sections with lectures fetched successfully",
+            data: sections,
+        });
+    } catch (error) {
+        console.error("GET ALL SECTIONS ERROR:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+const CreateLecture = async (req, res) => {
+    try {
+        const {
+            course_id,
+            section_id,
+            title,
+            type,
+            Article,
+            Quiz,
+            is_preview,
+        } = req.body;
+        console.log(req.body);
+
+        const instructor_id = req.user.id;
+
+        // ✅ FILE IS OPTIONAL
+        const file = req.file;
+        const videoPath = file ? file.path.replace(/\\/g, "/") : null;
+
+        const data = {
+            course_id,
+            section_id,
+            instructor_id,
+            title,
+            type,
+            video_url: type === "video" ? videoPath : null,
+            Article: type === "article" ? Article : null,
+            Quiz: type === "quiz" ? Quiz : null,
+            is_preview: is_preview,
+            created_at: new Date(),
+        };
+
+        await db.insert("tbl_lectures", data);
+
+        return res.status(200).json({
+            status: true,
+            message: "Lecture inserted successfully",
+        });
+    } catch (error) {
+        console.error("CREATE Lectures ERROR:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error",
+        });
+    }
+};
+const createLectureResource = async (req, res) => {
+    const { lecture_id, section_id, title, type, external_url } = req.body
+    const instructor_id = req.user.id;
+    const file = req.file;
+    const videoPath = file ? file.path.replace(/\\/g, "/") : null;
+    const data = {
+        lecture_id,
+        section_id,
+        instructor_id,
+        title,
+        type,
+        external_url: external_url || null,
+        file_url: videoPath || null,
+        'created_at': new Date(),
+    };
+    await db.insert("tbl_lecture_resources", data);
+    return res.status(200).json({
+        status: true,
+        message: "Lecture resource inserted successfully",
+    });
+
+}
+
+module.exports = { createCourse, getSubcategories, getAllCourses, createSection, GetAllSection, CreateLecture, createLectureResource, editSection, updateSection };

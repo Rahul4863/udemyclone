@@ -1,35 +1,43 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./CourseDetail.css";
 
 export default function CourseDetail() {
     const [allExpanded, setAllExpanded] = useState(false);
+    const [course, setCourse] = useState(null);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [total, setTotal] = useState(null);
+    const [curriculum, setCurriculum] = useState([]);
+    const [relatedCourses, setRelatedCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { id } = useParams();
+    useEffect(() => {
+        const fetchCourse = async () => {
+            try {
+                const response = await fetch(
+                    `http://localhost:3000/api/view/get-course-by-id/${id}`
+                );
 
-    const curriculum = [
-        {
-            id: "sec1",
-            title: "Introduction to HTML",
-            lectures: [
-                { name: "A Note About Course Updates", time: "00:36" },
-                { name: "What is HTML?", time: "04:18", preview: true },
-                { name: "Download Course Resources", time: "02:43" },
-                { name: "HTML Headings", time: "14:24" },
-                { name: "HTML Paragraphs", time: "08:40" },
-                { name: "Self Closing Tags", time: "11:40" },
-                { name: "[Project] Movie Ranking", time: "05:43" },
-                { name: "How to ace this course", time: "01:24" }
-            ]
-        },
-        {
-            id: "sec2",
-            title: "HTML & CSS Basics",
-            lectures: [
-                { name: "Intro to CSS", time: "05:10" },
-                { name: "Selectors Explained", time: "08:32" },
-                { name: "Layouts", time: "12:11" }
-            ]
-        }
-    ];
+                const data = await response.json();
+
+                if (data.status) {
+                    setCourse(data.course);
+                    setCurriculum(data.sections);
+                    setTotal(data.total);
+                    setRelatedCourses(data.related_courses);
+                }
+
+            } catch (error) {
+                console.error("API Error:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCourse();
+    }, [id]);
+    const requirements = JSON.parse(course?.requirements || "[]");
+    const learns = JSON.parse(course?.learn || "[]");
     const getTotalTime = (lectures) => {
         let seconds = 0;
 
@@ -44,8 +52,6 @@ export default function CourseDetail() {
 
         return hrs > 0 ? `${hrs}h ${remMins}min` : `${remMins}min`;
     };
-
-    const { id } = useParams();
     const [showVideo, setShowVideo] = useState(false);
 
     return (
@@ -54,19 +60,19 @@ export default function CourseDetail() {
                 <div className="container py-4">
                     <span className="badge bg-warning text-dark mb-2">Bestseller</span>
                     <h2 className="fw-bold">
-                        The Complete Full-Stack Web Development Bootcamp
+                        {course?.title}
                     </h2>
                     <p className="fs-5 opacity-75">
-                        Become a Full-Stack Developer with HTML, CSS, JavaScript, Node, React & More…
+                        {course?.heading}
                     </p>
                     <div className="d-flex gap-3 align-items-center small">
-                        ⭐ 4.7 (459,864 ratings) • 1,200,000 students enrolled
+                        ⭐ {course?.rating} ({course?.reviews} ratings) • {course?.enrolled} students enrolled
                     </div>
                     <p className="mt-2">
-                        Created by <span className="text-warning fw-semibold">Angela Yu</span>
+                        Created by <span className="text-warning fw-semibold">{course?.instructor_name}</span>
                     </p>
                     <div className="small opacity-75">
-                        🌐 Last updated November 2025 • ⏱️ English • Subtitles
+                        🌐 Last updated {course?.updated_at} • ⏱️ {course?.language} • Subtitles
                     </div>
 
                     <div className="mt-3 d-flex gap-2">
@@ -89,34 +95,17 @@ export default function CourseDetail() {
                     <div className="col-lg-8">
 
                         <div className="left-content">
-                            <div className="p-4 rounded shadow-sm mb-4">
-                                <h4>Course Description</h4>
-                                <p className="mt-2">
-                                    This Full-Stack Web Development Bootcamp takes you from absolute beginner
-                                    to job-ready developer. Learn HTML, CSS, JavaScript, Node, React, APIs,
-                                    databases and deployment with real world projects and best practices.
-                                </p>
 
-                                <p>
-                                    You will build multiple production web apps, understand full-stack
-                                    architecture, write clean code, handle authentication, payments,
-                                    security, optimization and more.
-                                </p>
-                            </div>
                             <div className="learn-box p-4 rounded shadow-sm mb-4">
                                 <h4>What you'll learn</h4>
 
                                 <div className="row mt-3">
                                     <div className="col-md-6">
-                                        <p>✔ Build real world websites</p>
-                                        <p>✔ Learn frontend & backend</p>
-                                        <p>✔ Create full stack applications</p>
-                                    </div>
 
-                                    <div className="col-md-6">
-                                        <p>✔ Learn latest technologies</p>
-                                        <p>✔ Understand deployment</p>
-                                        <p>✔ Job ready skills</p>
+                                        {learns.map((item, index) => (
+                                            <p key={index}>✔ {item}</p>
+                                        ))}
+
                                     </div>
                                 </div>
                             </div>
@@ -134,7 +123,7 @@ export default function CourseDetail() {
                             <div className="p-4 rounded shadow-sm mb-4">
                                 <div className="d-flex justify-content-between">
                                     <h4>Course Curriculum</h4>
-                                    <p>45 sections • 374 lectures • 61h 54m total length</p>
+                                    <p>{total?.total_sections} sections • {total?.total_lectures} lectures • {total?.total_duration} total length</p>
                                 </div>
                                 <div className="d-flex gap-2">
                                     <button
@@ -178,7 +167,7 @@ export default function CourseDetail() {
                                                     <strong>{section.title}</strong>
 
                                                     <span className="ms-auto text-muted small">
-                                                        {section.lectures.length} lectures • {getTotalTime(section.lectures)}
+                                                        {section.total_lectures} lectures • {section.total_duration}
                                                     </span>
                                                 </button>
                                             </h2>
@@ -217,13 +206,36 @@ export default function CourseDetail() {
 
                                 <div className="row mt-3">
                                     <div className="col-md-6">
-                                        <p>✔ Build real world websites</p>
-                                        <p>✔ Learn frontend & backend</p>
-                                        <p>✔ Create full stack applications</p>
+
+                                        {requirements.map((item, index) => (
+                                            <p key={index}>✔ {item}</p>
+                                        ))}
+
                                     </div>
-
-
                                 </div>
+                            </div>
+                            <div className="p-4 rounded shadow-sm mb-4">
+                                <h4>Course Description</h4>
+
+                                <div
+                                    className="mt-2"
+                                    style={{
+                                        maxHeight: isExpanded ? "none" : "150px",
+                                        overflow: "hidden",
+                                        position: "relative",
+                                        transition: "max-height 0.3s ease"
+                                    }}
+                                >
+                                    <div dangerouslySetInnerHTML={{ __html: course?.description }} />
+                                </div>
+                                {course?.description && (
+                                    <button
+                                        className="btn btn-link p-0 mt-2"
+                                        onClick={() => setIsExpanded(!isExpanded)}
+                                    >
+                                        {isExpanded ? "Read Less" : "Read More"}
+                                    </button>
+                                )}
                             </div>
                             <div className="p-4 rounded shadow-sm mb-4">
                                 <h4>Instructor</h4>

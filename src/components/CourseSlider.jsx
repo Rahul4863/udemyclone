@@ -1,6 +1,7 @@
 import Slider from "react-slick";
 import { Card } from "react-bootstrap";
 import "./CourseSlider.css";
+import { baseurl } from "../App";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 function NextArrow(props) {
@@ -23,7 +24,6 @@ function CourseSlider({ title, courses }) {
     const navigate = useNavigate();
     const [hoveredCourse, setHoveredCourse] = useState(null);
     const [popupSide, setPopupSide] = useState("right");
-    // Decide popup left / right
     const handleMouseEnter = (e, index) => {
         const slide = e.currentTarget;
         const rect = slide.getBoundingClientRect();
@@ -77,8 +77,8 @@ function CourseSlider({ title, courses }) {
                         onMouseLeave={() => setHoveredCourse(null)}
                     >
                         {/* Course Card */}
-                        <Card className="shadow-sm course-card" onClick={() => navigate(`/course/${i}`)}>
-                            <Card.Img src={c.img} />
+                        <Card className="shadow-sm course-card" onClick={() => navigate(`/course/${c.id}`)}>
+                            <Card.Img src={baseurl + "/" + c.img} />
                             <Card.Body>
                                 <Card.Title className="course-title h6">{c.title}</Card.Title>
                                 <p className="text-muted small">{c.trainer}</p>
@@ -124,7 +124,14 @@ function CourseSlider({ title, courses }) {
                                     <li>Job ready skills</li>
                                 </ul>
 
-                                <div className="d-flex align-items-center gap-2 mt-3" style={{ position: "absolute", bottom: "12px", left: "12px" }}>
+                                <div
+                                    className="d-flex align-items-center gap-2 mt-3"
+                                    style={{
+                                        position: "absolute",
+                                        bottom: "12px",
+                                        right: "12px"   // changed from left to right
+                                    }}
+                                >
                                     <button className="btn btn-light border wishlist-btn">
                                         <i className="bi bi-heart fs-5"></i>
                                     </button>

@@ -192,6 +192,16 @@ const createSubCategory = async (req, res) => {
         return res.status(500).json({ status: false, message: "Internal Server Error" });
     }
 }
+const InstructorView = async (req, res) => {
+    try {
+        const data = await db.selectAll('tbl_users', "*", "status = '1' AND role = '1'", "");
+        return res.status(200).json({ status: true, data });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+}
+
 const getAllSubCategory = async (req, res) => {
     try {
         const sql = `
@@ -306,6 +316,7 @@ module.exports = {
     createSubCategory,
     getAllSubCategory,
     getSubcategoryById,
+    InstructorView,
     updateSubCategory,
     refreshAdminAccessToken,
     adminlogout,

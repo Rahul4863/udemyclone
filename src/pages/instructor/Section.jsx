@@ -3,7 +3,9 @@ import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css";
 import axiosUser from "../../utils/axiosUser";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
+import { baseurl } from "../../App";
 const Section = () => {
     const [sections, setSections] = useState([]);
     const { id: courseId } = useParams();
@@ -15,7 +17,10 @@ const Section = () => {
     const [isSavingLecture, setIsSavingLecture] = useState(false);
     const [sectionMode, setSectionMode] = useState("add"); // add | edit
     const [editingSectionId, setEditingSectionId] = useState(null);
-
+    const [editingLectureId, setEditingLectureId] = useState(null);
+    const [lectureMode, setLectureMode] = useState("add"); // add | edit
+    const [resourceMode, setResourceMode] = useState("add"); // add | edit
+    const [editingResourceId, setEditingResourceId] = useState(null);
 
     const [lectureData, setLectureData] = useState({
         title: "",
@@ -101,7 +106,6 @@ const Section = () => {
             toast.error("Failed to load sections");
         }
     };
-
     const addLecture = async () => {
         if (!lectureData.title.trim() || isSavingLecture) return;
 
@@ -113,7 +117,14 @@ const Section = () => {
             formData.append("section_id", sections[activeSection].id);
             formData.append("title", lectureData.title);
             formData.append("type", lectureData.type);
-            formData.append("is_preview", lectureData.is_preview ? 1 : 0);
+            formData.append(
+                "is_preview",
+                lectureData.type === "video" && lectureData.is_preview ? 1 : 0
+            );
+
+            if (lectureMode === "edit") {
+                formData.append("lecture_id", editingLectureId); // ✅ IMPORTANT
+            }
 
             if (lectureData.type === "video" && lectureData.video_file) {
                 formData.append("video", lectureData.video_file);
@@ -127,34 +138,45 @@ const Section = () => {
                 formData.append("Quiz", JSON.stringify(lectureData.quiz));
             }
 
-            const res = await axiosUser.post("/course/create-lecture", formData);
+            const url =
+                lectureMode === "add"
+                    ? "/course/create-lecture"
+                    : "/course/update-lecture";
+
+            const res = await axiosUser.post(url, formData);
 
             if (res.data?.status) {
-                toast.success("Lecture added successfully");
+                toast.success(
+                    lectureMode === "add"
+                        ? "Lecture added successfully"
+                        : "Lecture updated successfully"
+                );
 
-                // ✅ SINGLE SOURCE OF TRUTH
                 await fetchSections();
 
-                setLectureData({
-                    title: "",
-                    type: "video",
-                    video_file: null,
-                    article_content: "",
-                    is_preview: false,
-                    resources: [],
-                    quiz: { title: "", questions: [] },
-                });
-
+                setLectureMode("add");
+                setEditingLectureId(null);
+                setLectureData({ ...emptyLecture });
                 document.getElementById("lectureModalClose").click();
-            } else {
-                toast.error(res.data?.message || "Failed to add lecture");
             }
-        } catch (error) {
-            console.error(error);
-            toast.error("Error while adding lecture");
+        } catch (err) {
+            toast.error("Failed to save lecture");
         } finally {
             setIsSavingLecture(false);
         }
+    };
+
+    const emptyLecture = {
+        title: "",
+        type: "video",
+        video_file: null,
+        article_content: "",
+        is_preview: false,
+        resources: [],
+        quiz: {
+            title: "",
+            questions: [],
+        },
     };
 
 
@@ -172,8 +194,77 @@ const Section = () => {
             }
         });
     };
+    const editResource = (resourceId) => {
+        const lecture = sections[activeSection]?.lectures?.[activeLecture];
 
-    /* ================= ADD RESOURCE ================= */
+        if (!lecture) return;
+
+        const resource = lecture.resources.find(r => r.id === resourceId);
+
+        if (!resource) return;
+
+        setResourceMode("edit");
+        setEditingResourceId(resource.id);
+
+        setResourceData({
+            title: resource.title,
+            type: resource.type,
+            url: resource.external_url || "",
+            file: null, // never prefill file input
+        });
+
+        // open modal manually
+        const modal = new window.bootstrap.Modal(
+            document.getElementById("resourceModal")
+        );
+        modal.show();
+    };
+
+    // const addResource = async () => {
+    //     try {
+    //         if (!resourceData.title) {
+    //             toast.error("Resource title required");
+    //             return;
+    //         }
+
+    //         const lecture = sections[activeSection].lectures[activeLecture];
+
+    //         const formData = new FormData();
+    //         formData.append("lecture_id", lecture.id);
+    //         formData.append("section_id", sections[activeSection].id);
+    //         formData.append("title", resourceData.title);
+    //         formData.append("type", resourceData.type);
+
+    //         if (resourceData.type === "link") {
+    //             formData.append("external_url", resourceData.url);
+    //         } else {
+    //             // 🔥 THIS MUST MATCH multer field name
+    //             formData.append("file", resourceData.file);
+    //         }
+
+    //         const res = await axiosUser.post(
+    //             "/course/create-lecture-resource",
+    //             formData
+    //         );
+
+    //         if (res.data?.status) {
+    //             toast.success("Resource added successfully");
+    //             await fetchSections();
+
+    //             setResourceData({
+    //                 title: "",
+    //                 type: "pdf",
+    //                 url: "",
+    //                 file: null,
+    //             });
+
+    //             document.getElementById("resourceModalClose").click();
+    //         }
+    //     } catch (err) {
+    //         console.error(err);
+    //         toast.error("Failed to upload resource");
+    //     }
+    // };
     const addResource = async () => {
         try {
             if (!resourceData.title) {
@@ -189,43 +280,102 @@ const Section = () => {
             formData.append("title", resourceData.title);
             formData.append("type", resourceData.type);
 
+            if (resourceMode === "edit") {
+                formData.append("resource_id", editingResourceId);
+            }
+
             if (resourceData.type === "link") {
                 formData.append("external_url", resourceData.url);
-            } else {
-                // 🔥 THIS MUST MATCH multer field name
+            } else if (resourceData.file) {
                 formData.append("file", resourceData.file);
             }
 
-            const res = await axiosUser.post(
-                "/course/create-lecture-resource",
-                formData
-            );
+            const url =
+                resourceMode === "add"
+                    ? "/course/create-lecture-resource"
+                    : "/course/update-lecture-resource";
+
+            const res = await axiosUser.post(url, formData);
 
             if (res.data?.status) {
-                toast.success("Resource added successfully");
+                toast.success(
+                    resourceMode === "add"
+                        ? "Resource added successfully"
+                        : "Resource updated successfully"
+                );
+
                 await fetchSections();
 
+                setResourceMode("add");
+                setEditingResourceId(null);
                 setResourceData({
                     title: "",
                     type: "pdf",
                     url: "",
                     file: null,
                 });
-
                 document.getElementById("resourceModalClose").click();
             }
         } catch (err) {
-            console.error(err);
-            toast.error("Failed to upload resource");
+            toast.error("Failed to save resource");
         }
     };
+    const deleteResource = async (id) => {
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "This resource will be permanently deleted!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+        });
 
+        if (!result.isConfirmed) return;
 
+        try {
+            Swal.fire({
+                title: "Deleting...",
+                text: "Please wait",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            const res = await axiosUser.delete(
+                `/course/delete-lecture-resource/${id}`
+            );
+
+            Swal.close();
+
+            if (res.data?.status) {
+                await fetchSections();
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Deleted!",
+                    text: "Resource deleted successfully.",
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            } else {
+                Swal.fire("Error", res.data?.message || "Delete failed", "error");
+            }
+
+        } catch (error) {
+            Swal.close();
+            Swal.fire("Error", "Failed to delete resource", "error");
+        }
+    };
+    const currentLecture =
+        activeSection !== null && activeLecture !== null
+            ? sections[activeSection]?.lectures?.[activeLecture]
+            : null;
 
     return (
         <div className="container mt-4">
-
-            {/* HEADER */}
             <div className="d-flex justify-content-between mb-3">
                 <h4>Course Content</h4>
                 <button
@@ -312,10 +462,18 @@ const Section = () => {
                                     className="btn btn-primary btn-sm mb-2"
                                     data-bs-toggle="modal"
                                     data-bs-target="#lectureModal"
-                                    onClick={() => setActiveSection(sIndex)}
+                                    onClick={() => {
+                                        setActiveSection(sIndex);
+
+                                        // ✅ RESET EVERYTHING FOR ADD MODE
+                                        setLectureMode("add");
+                                        setEditingLectureId(null);
+                                        setLectureData({ ...emptyLecture });
+                                    }}
                                 >
                                     + Add Lecture
                                 </button>
+
 
                                 <ul className="list-group">
                                     {section.lectures.length === 0 && (
@@ -338,7 +496,7 @@ const Section = () => {
                                                 )}
                                             </div>
 
-                                            <div>
+                                            <div className="d-flex gap-2">
                                                 {/* ✅ ADD RESOURCE BUTTON */}
                                                 <button
                                                     className="btn btn-outline-secondary btn-sm me-2"
@@ -347,12 +505,48 @@ const Section = () => {
                                                     onClick={() => {
                                                         setActiveSection(sIndex);
                                                         setActiveLecture(lIndex);
+                                                        setResourceMode("add");
+                                                        setEditingResourceId(null);
+                                                        setResourceData({
+                                                            title: "",
+                                                            type: "pdf",
+                                                            url: "",
+                                                            file: null,
+                                                        });
                                                     }}
                                                 >
-                                                    Resources ({lec.resources?.length || 0})
+                                                    Resources ({lec.resource_count || 0})
                                                 </button>
 
                                                 {/* (optional) delete lecture */}
+                                                <button
+                                                    className="btn btn-primary btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#lectureModal"
+                                                    onClick={() => {
+                                                        setActiveSection(sIndex);
+                                                        setActiveLecture(lIndex);
+
+                                                        setLectureMode("edit");
+                                                        setEditingLectureId(lec.id);
+
+                                                        setLectureData({
+                                                            title: lec.title,
+                                                            type: lec.type,
+                                                            video_file: null, // never prefill file input
+                                                            article_content: lec.Article || "",
+                                                            is_preview: lec.is_preview === 1,
+                                                            resources: lec.resources || [],
+                                                            quiz: lec.Quiz
+                                                                ? JSON.parse(lec.Quiz)
+                                                                : { title: "", questions: [] },
+                                                        });
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+
+
                                                 <button className="btn btn-danger btn-sm">
                                                     Delete
                                                 </button>
@@ -420,7 +614,12 @@ const Section = () => {
             <div className="modal fade" id="lectureModal">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
-                        <div className="modal-header"><h5>Add Lecture</h5></div>
+                        <div className="modal-header">
+                            <h5>
+                                {lectureMode === "add" ? "Add Lecture" : "Edit Lecture"}
+                            </h5>
+                        </div>
+
 
                         <div className="modal-body">
                             <input
@@ -527,10 +726,13 @@ const Section = () => {
             </div>
 
             {/* ================= ADD RESOURCE MODAL ================= */}
-            <div className="modal fade" id="resourceModal">
+            <div className="modal fade modal-xl" id="resourceModal">
                 <div className="modal-dialog">
                     <div className="modal-content">
-                        <div className="modal-header"><h5>Add Resource</h5></div>
+                        <div className="modal-header"><h5>
+                            {resourceMode === "add" ? "Add Resource" : "Edit Resource"}
+                        </h5>
+                        </div>
 
                         <div className="modal-body">
                             {/* Resource Title */}
@@ -543,12 +745,56 @@ const Section = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Slides</td>
-                                        <td><a href="#">slides.pdf</a></td>
-                                        <td><button className="btn btn-sm btn-danger">Delete</button></td>
-                                    </tr>
+                                    {currentLecture?.resources?.length > 0 ? (
+                                        currentLecture.resources.map((res) => (
+                                            <tr key={res.id}>
+                                                <td>{res.title}</td>
+
+                                                <td>
+                                                    {res.type === "link" ? (
+                                                        <a
+                                                            href={res.external_url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            {res.external_url}
+                                                        </a>
+                                                    ) : (
+                                                        <a
+                                                            href={`${baseurl}/${res.file_url}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            download
+                                                        >
+                                                            {res.file_url.split("/").pop()}
+                                                        </a>
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        className="btn btn-primary btn-sm "
+                                                        onClick={() => editResource(res.id)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-danger mx-2"
+                                                        onClick={() => deleteResource(res.id)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="3" className="text-center text-muted">
+                                                No resources added yet
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
+
                             </table>
                             <hr />
                             <input
@@ -619,8 +865,9 @@ const Section = () => {
                                 Cancel
                             </button>
                             <button className="btn btn-primary" onClick={addResource}>
-                                Save Resource
+                                {resourceMode === "add" ? "Save Resource" : "Update Resource"}
                             </button>
+
                         </div>
                     </div>
                 </div>

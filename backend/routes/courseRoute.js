@@ -1,16 +1,15 @@
 const express = require("express");
 const CourseRouter = express.Router();
-const { createCourse, getSubcategories, getAllCourses, createSection, GetAllSection, CreateLecture, editSection, createLectureResource, updateSection } = require("../controllers/CourseCreateController");
+const { createCourse, getSubcategories, getAllCourses, createSection, updateCourse, getCourseById, DeleteLectureResource, GetAllSection, updateLectureResource, updateLecture, CreateLecture, editSection, createLectureResource, updateSection } = require("../controllers/CourseCreateController");
 const uploadSingleImage = require('../utils/uploadSingleImage');
 const uploadMiddleware = require('../middleware/uploadMiddleware');
 const uploadMedia = require("../utils/uploadMedia");
-
 const { userauthenticate } = require("../middleware/userauth");
 const uploadCourseMedia = uploadMedia([
     {
         name: "photo",
         types: [".jpg", ".jpeg", ".png", ".webp"],
-        size: 2 * 1024 * 1024,
+        size: 4 * 1024 * 1024,
         folder: "uploads/images",
         maxCount: 1,
     },
@@ -23,6 +22,8 @@ const uploadCourseMedia = uploadMedia([
     }
 ]);
 CourseRouter.post("/create", uploadCourseMedia, userauthenticate, createCourse);
+CourseRouter.post("/update", uploadCourseMedia, userauthenticate, updateCourse);
+CourseRouter.get("/getcourse/:id", userauthenticate, getCourseById);
 CourseRouter.get("/subcategories/:id", userauthenticate, getSubcategories);
 CourseRouter.get("/all", userauthenticate, getAllCourses);
 CourseRouter.post("/section", userauthenticate, createSection);
@@ -34,6 +35,12 @@ const maxSizes = 2 * 1024 * 1024;
 const uploadBannerFolder = "uploads/lectures";
 const uploadBanner = uploadSingleImage(allowedTypess, maxSizes, uploadBannerFolder, "video");
 CourseRouter.post("/create-lecture", uploadMiddleware(uploadBanner), userauthenticate, CreateLecture);
+CourseRouter.post(
+    "/update-lecture",
+    uploadMiddleware(uploadBanner),
+    userauthenticate,
+    updateLecture
+);
 
 
 
@@ -44,4 +51,6 @@ const maxSize = 10 * 1024 * 1024;
 const uploadFolder = "uploads/resources";
 const uploadResource = uploadSingleImage(allowedTypes, maxSize, uploadFolder, "file");
 CourseRouter.post("/create-lecture-resource", uploadMiddleware(uploadResource), userauthenticate, createLectureResource);
+CourseRouter.post("/update-lecture-resource", uploadMiddleware(uploadResource), userauthenticate, updateLectureResource);
+CourseRouter.delete("/delete-lecture-resource/:id", userauthenticate, DeleteLectureResource);
 module.exports = CourseRouter;

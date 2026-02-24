@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axiosUser from "../utils/axiosUser";
-
+import { baseurl } from "../App";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -16,7 +16,9 @@ export const AuthProvider = ({ children }) => {
     // 🖼 BANNER
     const [banner, setBanner] = useState([]);
     const [loadingBanner, setLoadingBanner] = useState(false);
-
+    // 📚 COURSE
+    const [course, setCourse] = useState([]);
+    const [loadingCourse, setLoadingCourse] = useState(false);
     // ======================
     // LOAD TOKEN ON REFRESH
     // ======================
@@ -50,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     const fetchBanner = async () => {
         try {
             setLoadingBanner(true);
-            const res = await fetch("http://localhost:3000/api/view/get-banner");
+            const res = await fetch(`${baseurl}/api/view/get-banner`);
             const json = await res.json();
             if (json.status) {
                 setBanner(json.data);
@@ -61,7 +63,20 @@ export const AuthProvider = ({ children }) => {
             setLoadingBanner(false);
         }
     };
-
+    const fetchCourse = async () => {
+        try {
+            setLoadingCourse(true);
+            const res = await fetch(`${baseurl}/api/view/get-course`);
+            const json = await res.json();
+            if (json.status) {
+                setCourse(json.data);
+            }
+        } catch (error) {
+            console.error("Course fetch error:", error);
+        } finally {
+            setLoadingCourse(false);
+        }
+    };
     useEffect(() => {
         fetchBanner();
     }, []);
@@ -93,9 +108,12 @@ export const AuthProvider = ({ children }) => {
                 loadingUser,
                 banner,
                 loadingBanner,
+                course,
+                loadingCourse,
                 login,
                 logout,
                 fetchUserProfile,
+                fetchCourse,
                 fetchBanner
             }}
         >

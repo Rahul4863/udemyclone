@@ -4,11 +4,11 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css";
+import { useParams, Link } from "react-router-dom";
 import "./CreateCourse.css";
-
 const CreateCourse = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-
   const [course, setCourse] = useState({
     title: "",
     heading: "",
@@ -24,7 +24,6 @@ const CreateCourse = () => {
     thumbnail: null,
     coursevideo: null,
   });
-
   const [learn, setLearn] = useState([""]);
   const [requirements, setRequirements] = useState([""]);
   const [coursefor, setCoursefor] = useState([""]);
@@ -33,7 +32,54 @@ const CreateCourse = () => {
   useEffect(() => {
     fetchCategories();
   }, []);
+  useEffect(() => {
+    if (id) {
+      fetchCourse();
+    }
+  }, [id]);
+  const fetchCourse = async () => {
+    try {
+      const res = await axiosUser.get(`/course/getcourse/${id}`);
+      console.log(res.data);
 
+      if (res.data.status) {
+        const data = res.data.data;
+
+        setCourse({
+          title: data.title || "",
+          heading: data.heading || "",
+          slug: data.slug || "",
+          level: data.level || "",
+          language: data.language || "",
+          description: data.description || "",
+          price: data.price || "",
+          is_free: data.is_free,
+          status: data.status,
+          category: data.category || "",
+          subcategory: data.subcategory || "",
+          thumbnail: null,
+          coursevideo: null,
+        });
+
+        setLearn(data.learn ? JSON.parse(data.learn) : [""]);
+        setRequirements(data.requirements ? JSON.parse(data.requirements) : [""]);
+        setCoursefor(data.coursefor ? JSON.parse(data.coursefor) : [""]);
+
+        // 🔥 Load subcategories automatically
+        if (data.category) {
+          const subRes = await axiosUser.get(`/course/subcategories/${data.category}`);
+          if (subRes.data.status) {
+            setSubcategories(subRes.data.data);
+          }
+        }
+
+      } else {
+        toast.error("Failed to load course data");
+      }
+    } catch (error) {
+      toast.error("Error loading course");
+    }
+  };
   const fetchCategories = async () => {
     try {
       const res = await axiosUser.get("/auth/getallcategory");
@@ -76,6 +122,36 @@ const CreateCourse = () => {
       .trim()
       .replace(/[^a-z0-9\s-]/g, "")
       .replace(/\s+/g, "-");
+  // const handleSubmit = async () => {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("title", course.title);
+  //     formData.append("slug", course.slug);
+  //     formData.append("heading", course.heading);
+  //     formData.append("description", course.description);
+  //     formData.append("level", course.level);
+  //     formData.append("language", course.language);
+  //     formData.append("is_free", course.is_free);
+  //     formData.append("price", course.is_free ? 0 : course.price);
+  //     formData.append("status", course.status);
+  //     formData.append("category", course.category);
+  //     formData.append("subcategory", course.subcategory);
+  //     formData.append("learn", JSON.stringify(learn));
+  //     formData.append("requirements", JSON.stringify(requirements));
+  //     formData.append("coursefor", JSON.stringify(coursefor));
+  //     if (course.thumbnail) formData.append("photo", course.thumbnail);
+  //     if (course.coursevideo) formData.append("video", course.coursevideo);
+  //     const res = await axiosUser.post("/course/create", formData);
+  //     if (res.data.status) {
+  //       toast.success(res.data.message || "Course created successfully");
+  //       setTimeout(() => navigate("/instructor/courses"), 1500);
+  //     } else {
+  //       toast.error(res.data.message || "Failed to create course");
+  //     }
+  //   } catch (err) {
+  //     toast.error(err.response?.data?.message || "Something went wrong");
+  //   }
+  // };
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
@@ -94,28 +170,38 @@ const CreateCourse = () => {
       formData.append("learn", JSON.stringify(learn));
       formData.append("requirements", JSON.stringify(requirements));
       formData.append("coursefor", JSON.stringify(coursefor));
-
       if (course.thumbnail) formData.append("photo", course.thumbnail);
       if (course.coursevideo) formData.append("video", course.coursevideo);
-
-      const res = await axiosUser.post("/course/create", formData);
+      let res;
+      if (id) {
+        // ✅ UPDATE
+        formData.append("course_id", id);
+        res = await axiosUser.post("/course/update", formData);
+      } else {
+        // ✅ CREATE
+        res = await axiosUser.post("/course/create", formData);
+      }
 
       if (res.data.status) {
-        toast.success(res.data.message || "Course created successfully");
+        toast.success(res.data.message);
         setTimeout(() => navigate("/instructor/courses"), 1500);
       } else {
-        toast.error(res.data.message || "Failed to create course");
+        toast.error(res.data.message);
       }
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
-
   return (
     <div className="container my-4 create-course">
       {/* ================= COURSE INFO ================= */}
       <div className="card p-4 shadow-sm mb-4">
-        <h4 className="mb-3">Course Information</h4>
+        <div className="d-flex justify-content-between align-items-center">
+          <h4 className="mb-3">Course Information</h4>
+          <span onClick={() => navigate("/instructor/courses")} style={{ cursor: "pointer", color: "blue" }}>Back to Courses</span>
+        </div>
+
 
         <div className="row g-4">
           <div className="col-lg-6">
@@ -394,9 +480,8 @@ const CreateCourse = () => {
           </div>
         </div>
       </div>
-
       <button className="btn btn-success w-100 py-3 mt-4" onClick={handleSubmit}>
-        🚀 Publish Course
+        🚀 {id ? "Update Course" : "Publish Course"}
       </button>
     </div>
   );

@@ -60,7 +60,128 @@ const createCourse = async (req, res) => {
         });
     }
 };
+const getCourseById = async (req, res) => {
+    const id = req.params.id;
+    const data = await db.select('tbl_courses', '*', `id=${id}`);
+    if (!data) {
+        return res.status(404).json({
+            status: false,
+            message: "Course not found",
+        });
+    }
+    return res.status(200).json({
+        status: true,
+        data
+    })
+}
+const updateCourse = async (req, res) => {
+    try {
+        const {
+            course_id,
+            title,
+            slug,
+            description,
+            heading,
+            level,
+            language,
+            category,
+            subcategory,
+            is_free,
+            price,
+            learn,
+            requirements,
+            coursefor,
+            status
+        } = req.body;
 
+        if (!course_id) {
+            return res.status(400).json({
+                status: false,
+                message: "Course ID is required",
+            });
+        }
+
+        const instructorId = req.user.id;
+
+        // ✅ Get existing course
+        const existingCourse = await db.select(
+            "tbl_courses",
+            "*",
+            `id='${course_id}' AND instructor_id='${instructorId}'`
+        );
+
+        if (!existingCourse) {
+            return res.status(404).json({
+                status: false,
+                message: "Course not found",
+            });
+        }
+
+        const imageFile = req.files?.photo?.[0] || null;
+        const videoFile = req.files?.video?.[0] || null;
+
+        let thumbnailPath = existingCourse.thumbnail;
+        let videoPath = existingCourse.coursevideo;
+
+        /* ================= HANDLE THUMBNAIL ================= */
+        if (imageFile) {
+            // delete old thumbnail
+            if (existingCourse.thumbnail && fs.existsSync(existingCourse.thumbnail)) {
+                fs.unlinkSync(existingCourse.thumbnail);
+            }
+
+            thumbnailPath = imageFile.path.replace(/\\/g, "/");
+        }
+
+        /* ================= HANDLE VIDEO ================= */
+        if (videoFile) {
+            // delete old video
+            if (existingCourse.coursevideo && fs.existsSync(existingCourse.coursevideo)) {
+                fs.unlinkSync(existingCourse.coursevideo);
+            }
+
+            videoPath = videoFile.path.replace(/\\/g, "/");
+        }
+
+        const updateData = {
+            title,
+            slug,
+            description,
+            heading,
+            level,
+            language,
+            category,
+            subcategory,
+            thumbnail: thumbnailPath,
+            coursevideo: videoPath,
+            price: Number(is_free) === 1 ? 0 : price,
+            is_free,
+            status: status ?? existingCourse.status,
+            learn,
+            requirements,
+            coursefor,
+            updated_at: new Date(),
+        };
+
+        await db.update(
+            "tbl_courses",
+            updateData,
+            `id='${course_id}'`
+        );
+
+        return res.status(200).json({
+            status: true,
+            message: "Course updated successfully",
+        });
+
+    } catch (error) {
+        console.error("UPDATE COURSE ERROR:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error",
+        });
+    }
+};
 const getSubcategories = async (req, res) => {
     const id = req.params.id;
     const data = await db.selectAll('tbl_subcategory', '*', `category_id=${id}`);
@@ -193,8 +314,10 @@ const GetAllSection = async (req, res) => {
             });
         }
 
-        // 2️⃣ Attach lectures to each section
+        // 2️⃣ Loop sections
         for (let section of sections) {
+
+            // 👉 Get lectures of this section
             const lectures = await db.selectAll(
                 "tbl_lectures",
                 "*",
@@ -202,14 +325,35 @@ const GetAllSection = async (req, res) => {
                 "ORDER BY id ASC"
             );
 
-            section.lectures = lectures || []; // ✅ VERY IMPORTANT
+            section.lectures = [];
+            section.total_resources = 0;
+
+            // 3️⃣ Loop lectures
+            for (let lecture of lectures || []) {
+
+                // 👉 Get resources for this lecture + section
+                const resources = await db.selectAll(
+                    "tbl_lecture_resources",
+                    "*",
+                    `lecture_id='${lecture.id}' AND section_id='${section.id}'`,
+                    "ORDER BY id DESC"
+                );
+
+                lecture.resources = resources || [];
+                lecture.resource_count = lecture.resources.length;
+
+                section.total_resources += lecture.resource_count;
+
+                section.lectures.push(lecture);
+            }
         }
 
         return res.status(200).json({
             status: true,
-            message: "Sections with lectures fetched successfully",
+            message: "Sections with lectures & resources fetched successfully",
             data: sections,
         });
+
     } catch (error) {
         console.error("GET ALL SECTIONS ERROR:", error);
         return res.status(500).json({
@@ -218,7 +362,6 @@ const GetAllSection = async (req, res) => {
         });
     }
 };
-
 const CreateLecture = async (req, res) => {
     try {
         const {
@@ -287,5 +430,185 @@ const createLectureResource = async (req, res) => {
     });
 
 }
+const updateLectureResource = async (req, res) => {
+    try {
+        const {
+            resource_id,
+            title,
+            type,
+            external_url
+        } = req.body;
 
-module.exports = { createCourse, getSubcategories, getAllCourses, createSection, GetAllSection, CreateLecture, createLectureResource, editSection, updateSection };
+        const newFile = req.file;
+        const existing = await db.select(
+            "tbl_lecture_resources",
+            "*",
+            `id='${resource_id}'`
+        );
+
+        if (!existing) {
+            return res.status(404).json({
+                status: false,
+                message: "Resource not found"
+            });
+        }
+
+        const updateData = {
+            title,
+            type,
+            external_url: type === "link" ? external_url : null,
+            updated_at: new Date()
+        };
+
+        // 2️⃣ If new file uploaded
+        if (newFile) {
+
+            // 🔥 Delete old file if exists
+            if (existing.file_url) {
+                const oldPath = path.join(process.cwd(), existing.file_url);
+
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+            }
+
+            updateData.file_url = newFile.path.replace(/\\/g, "/");
+        }
+
+        // 3️⃣ If changing type to link → remove old file
+        if (type === "link" && existing.file_url) {
+            const oldPath = path.join(process.cwd(), existing.file_url);
+
+            if (fs.existsSync(oldPath)) {
+                fs.unlinkSync(oldPath);
+            }
+
+            updateData.file_url = null;
+        }
+
+        await db.update(
+            "tbl_lecture_resources",
+            updateData,
+            `id='${resource_id}'`
+        );
+
+        return res.json({
+            status: true,
+            message: "Resource updated successfully"
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error"
+        });
+    }
+};
+const DeleteLectureResource = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // 1️⃣ Get resource first
+        const resource = await db.select(
+            "tbl_lecture_resources",
+            "*",
+            `id='${id}'`
+        );
+        if (!resource) {
+            return res.status(404).json({
+                status: false,
+                message: "Resource not found",
+            });
+        }
+
+        // 2️⃣ Delete file from folder (if exists)
+        if (resource.file_url) {
+            const filePath = path.join(
+                __dirname,
+                "..",
+                "..",
+                resource.file_url
+            );
+
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+
+        // 3️⃣ Delete from DB
+        await db.delete(
+            "tbl_lecture_resources",
+            `id='${id}'`
+        );
+
+        return res.json({
+            status: true,
+            message: "Resource deleted successfully",
+        });
+
+    } catch (error) {
+        console.error("DELETE RESOURCE ERROR:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error",
+        });
+    }
+};
+const updateLecture = async (req, res) => {
+    try {
+        const instructor_id = req.user.id;
+        const {
+            lecture_id,
+            title,
+            type,
+            is_preview,
+            Article,
+            Quiz,
+        } = req.body;
+
+        const file = req.file;
+        const videoPath = file ? file.path.replace(/\\/g, "/") : null;
+
+        const updateData = {
+            title,
+            type,
+            Article: null,
+            Quiz: null,
+            is_preview: type === "video" ? Number(is_preview) : 0,
+            updated_at: new Date(),
+        };
+
+        if (type === "video" && videoPath) {
+            updateData.video_url = videoPath;
+        }
+
+        if (type === "article") {
+            updateData.Article = Article;
+            updateData.video_url = null;
+        }
+
+        if (type === "quiz") {
+            updateData.Quiz = Quiz;
+            updateData.video_url = null;
+        }
+
+        await db.update(
+            "tbl_lectures",
+            updateData,
+            `id='${lecture_id}' AND instructor_id='${instructor_id}'`
+        );
+
+        return res.status(200).json({
+            status: true,
+            message: "Lecture updated successfully",
+        });
+    } catch (error) {
+        console.error("UPDATE LECTURE ERROR:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Failed to update lecture",
+        });
+    }
+};
+module.exports = { createCourse, getCourseById, getSubcategories, updateCourse, DeleteLectureResource, getAllCourses, createSection, GetAllSection, CreateLecture, updateLecture, createLectureResource, editSection, updateSection, updateLectureResource };

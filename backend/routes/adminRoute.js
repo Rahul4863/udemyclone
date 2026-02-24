@@ -1,6 +1,6 @@
 const express = require("express");
 const AdminRouter = express.Router();
-const { Adminlogin, refreshAdminAccessToken, createCategory, adminlogout, getAllCategory, getcategoryById, updateCategory, createSubCategory, getAllSubCategory, getSubcategoryById, updateProfile, updateSubCategory, getProfileById } = require("../controllers/AdminController");
+const { Adminlogin, refreshAdminAccessToken, createCategory, adminlogout, InstructorView, getAllCategory, getcategoryById, updateCategory, createSubCategory, getAllSubCategory, getSubcategoryById, updateProfile, updateSubCategory, getProfileById } = require("../controllers/AdminController");
 const { BannerController, getBannerController, deleteBannerController, EditBannerController, updateBanner } = require("../controllers/BannerController");
 const { InsightInterestController, getInsightInterestController, deleteInsightInterestController, EditInsightInterestController, updateInsightInterestController } = require("../controllers/insightController");
 const { adminauthenticate } = require("../middleware/adminauth");
@@ -13,6 +13,7 @@ AdminRouter.get("/get-category/:id", adminauthenticate, getcategoryById);
 AdminRouter.put("/update-category/:id", adminauthenticate, updateCategory);
 AdminRouter.post("/create-subcategory", adminauthenticate, createSubCategory);
 AdminRouter.get("/get-all-subcategory", adminauthenticate, getAllSubCategory);
+AdminRouter.get("/instructor-view", adminauthenticate, InstructorView);
 AdminRouter.get("/get-subcategory/:id", adminauthenticate, getSubcategoryById);
 AdminRouter.put("/update-subcategory/:id", adminauthenticate, updateSubCategory);
 AdminRouter.post("/refresh-admin-access-token", refreshAdminAccessToken);
@@ -28,7 +29,6 @@ AdminRouter.put("/update-banner/:id", uploadMiddleware(uploadBanner), adminauthe
 AdminRouter.get("/get-banner", adminauthenticate, getBannerController);
 AdminRouter.get("/get-banner/:id", adminauthenticate, EditBannerController);
 AdminRouter.delete("/delete-banner/:id", adminauthenticate, deleteBannerController);
-
 // insight interest controller
 const interestallowedTypes = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
 const interestmaxSize = 2 * 1024 * 1024;

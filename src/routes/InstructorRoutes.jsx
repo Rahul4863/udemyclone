@@ -16,6 +16,7 @@ export default function InstructorRoutes() {
             <Route element={<InstructorLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="create" element={<CreateCourse />} />
+                <Route path="create/:id" element={<CreateCourse />} />
                 <Route path="courses" element={<AllCourses />} />
                 <Route path="students" element={<Students />} />
                 <Route path="course/:id/section" element={<Section />} />

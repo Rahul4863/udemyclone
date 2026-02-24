@@ -44,10 +44,9 @@ function AdminLogin() {
         const key = params.get("key");
 
         if (key !== "ADMIN123") {
-            navigate("/"); // ya 404
+            navigate("/");
         }
     }, []);
-
     return (
         <div
             className="d-flex justify-content-center align-items-center"
@@ -94,7 +93,6 @@ function AdminLogin() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-
                 <button
                     className="btn btn-primary w-100 rounded-pill py-2"
                     onClick={handleLogin}

@@ -7,17 +7,13 @@ const { userauthenticate } = require("../middleware/userauth");
 const uploadSingleImage = require('../utils/uploadSingleImage');
 const uploadMiddleware = require('../middleware/uploadMiddleware');
 const allowedTypes = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
-const maxSize = 2 * 1024 * 1024;
+const maxSize = 20 * 1024 * 1024;
 const uploadFolder = "uploads/users";
 const upload = uploadSingleImage(allowedTypes, maxSize, uploadFolder, "photo");
 AuthRouter.post("/register", userRegister);
 AuthRouter.post("/login", userlogin);
 AuthRouter.get("/profile", userauthenticate, getProfileById);
-
 AuthRouter.put("/update", userauthenticate, uploadMiddleware(upload), updateProfile);
-
-
-// user insight controller
 const interestallowedTypes = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
 const interestmaxSize = 2 * 1024 * 1024;
 const interestuploadFolder = "uploads/user-insight";

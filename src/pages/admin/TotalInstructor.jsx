@@ -18,7 +18,6 @@ export default function TotalInstructor() {
 
         { name: "Created At", selector: row => row.created_at?.split("T")[0] },
     ];
-
     return (
         <>
             <h2>Total Instructor</h2>

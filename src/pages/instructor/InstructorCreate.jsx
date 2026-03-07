@@ -13,6 +13,7 @@ export default function InstructorCreate() {
         phone: "",
         language: "",
         description: "",
+        designation: "",
         photo: null
     });
     const IMAGE_BASE = baseurl + "/";
@@ -26,23 +27,19 @@ export default function InstructorCreate() {
             description: user.description || "",
             photo: null
         });
-
         const modal = new bootstrap.Modal(
             document.getElementById("editModal")
         );
         modal.show();
     };
-
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-
         if (name === "photo") {
             setEditData({ ...editData, photo: files[0] });
         } else {
             setEditData({ ...editData, [name]: value });
         }
     };
-
     const updateUser = async () => {
         try {
             const formData = new FormData();
@@ -51,17 +48,13 @@ export default function InstructorCreate() {
             formData.append("phone", editData.phone);
             formData.append("language", editData.language);
             formData.append("description", editData.description);
-
+            formData.append("designation", editData.designation)
             if (editData.photo) {
                 formData.append("photo", editData.photo);
             }
-
             const res = await axiosUser.put("auth/update", formData);
-
-            // 🔥 THIS WILL NOW RUN
             if (res.data.status === true) {
                 toast.success(res.data.message);
-
                 setUser(prev => ({
                     ...prev,
                     image: res.data.image,
@@ -75,7 +68,6 @@ export default function InstructorCreate() {
 
         } catch (error) {
             console.error("Axios error:", error);
-
             toast.error(
                 error?.response?.data?.message ||
                 error?.message ||
@@ -144,6 +136,13 @@ export default function InstructorCreate() {
                                 className="form-control mb-2"
                                 name="name"
                                 value={editData.name}
+                                onChange={handleChange}
+                                placeholder="Name"
+                            />
+                            <input
+                                className="form-control mb-2"
+                                name="designation"
+                                value={editData.designation}
                                 onChange={handleChange}
                                 placeholder="Name"
                             />

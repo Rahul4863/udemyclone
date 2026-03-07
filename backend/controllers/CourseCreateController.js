@@ -59,7 +59,7 @@ const createCourse = async (req, res) => {
             message: "Internal server error",
         });
     }
-};
+}
 const getCourseById = async (req, res) => {
     const id = req.params.id;
     const data = await db.select('tbl_courses', '*', `id=${id}`);
@@ -181,7 +181,7 @@ const updateCourse = async (req, res) => {
             message: "Internal server error",
         });
     }
-};
+}
 const getSubcategories = async (req, res) => {
     const id = req.params.id;
     const data = await db.selectAll('tbl_subcategory', '*', `category_id=${id}`);

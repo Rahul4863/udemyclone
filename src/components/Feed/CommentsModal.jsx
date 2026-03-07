@@ -30,7 +30,7 @@ const CommentsModal = ({ selectedPost, setSelectedPost, commentInput, setComment
                                     value={commentInput}
                                     onChange={(e) => setCommentInput(e.target.value)}
                                 />
-                                <button className="btn btn-primary" onClick={addCommentModal}>
+                                <button data-bs-dismiss="modal" className="btn btn-primary" onClick={addCommentModal}>
                                     Post
                                 </button>
                             </div>

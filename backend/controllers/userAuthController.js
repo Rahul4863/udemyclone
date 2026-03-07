@@ -119,7 +119,7 @@ const getProfileById = async (req, res) => {
     }
 }
 const updateProfile = async (req, res) => {
-    const { name, email, phone, language, description } = req.body;
+    const { name, email, phone, language, description, designation } = req.body;
     const file = req.file;
     const id = req.user.id;
 
@@ -155,6 +155,7 @@ const updateProfile = async (req, res) => {
                 email,
                 phone,
                 language,
+                designation,
                 description,
                 image: imagePath,
                 updated_at: new Date()

@@ -7,11 +7,9 @@ import { baseurl } from "../App";
 function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-
     const handleLogin = async () => {
         if (!email || !password) {
             toast.error("Email and password are required");

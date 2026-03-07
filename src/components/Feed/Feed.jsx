@@ -7,7 +7,11 @@ import PostCard from "./PostCard";
 import CommentsModal from "./CommentsModal";
 import LikesModal from "./LikesModal";
 import CreatePostModal from "./CreatePostModal";
+import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
+import axiosUser from "../../utils/axiosUser";
 const Feed = () => {
+    const { user, setUser } = useAuth();
     const [posts, setPosts] = useState([
         {
             id: 1,
@@ -80,7 +84,59 @@ const Feed = () => {
         videos: [],
         docs: []
     });
+    const addPost = async () => {
+        try {
 
+            const formData = new FormData();
+
+            formData.append("text", text);
+
+            let type = "text";
+
+            if (media.images.length > 0) {
+                type = "images";
+                media.images.forEach((img) => {
+                    formData.append("images", img);
+                });
+            }
+
+            if (media.videos.length > 0) {
+                type = "videos";
+                media.videos.forEach((video) => {
+                    formData.append("videos", video);
+                });
+            }
+
+            if (media.docs.length > 0) {
+                type = "docs";
+                media.docs.forEach((doc) => {
+                    formData.append("docs", doc);
+                });
+            }
+            formData.append("type", type);
+            const res = await axiosUser.post(
+                "/feed/createfeed",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            );
+            console.log("Post Created :", res.data);
+            toast.success("Post created successfully");
+            setText("");
+            setMedia({
+                images: [],
+                videos: [],
+                docs: []
+            });
+
+        } catch (err) {
+            console.log("Error:", err);
+            toast.error("Something went wrong");
+        }
+    };
     const shuffleBoard = () => {
         let arr = [...correctOrder];
         do {
@@ -126,67 +182,88 @@ const Feed = () => {
     };
 
     // Like
-    const toggleLike = (id) => {
-        const userName = "Rahul Soni";
-        setPosts(posts.map(post => {
-            if (post.id === id) {
-                const isLiked = post.liked;
-                return {
-                    ...post,
-                    liked: !isLiked,
-                    likes: isLiked ? post.likes - 1 : post.likes + 1,
-                    likedUsers: isLiked
-                        ? post.likedUsers.filter(u => u !== userName)
-                        : [...post.likedUsers, userName]
-                };
-            }
-            return post;
-        }));
+    const toggleLike = async (id) => {
+
+        try {
+
+            const res = await axiosUser.post("/feed/togglelike", {
+                post_id: id
+            });
+
+            const action = res.data.action;
+
+            setPosts(posts.map(post => {
+
+                if (post.id === id) {
+
+                    if (action === "liked") {
+                        return {
+                            ...post,
+                            liked: true,
+                            likes: post.likes + 1
+                        };
+                    }
+
+                    if (action === "unliked") {
+                        return {
+                            ...post,
+                            liked: false,
+                            likes: post.likes - 1
+                        };
+                    }
+
+                }
+
+                return post;
+
+            }));
+
+        } catch (err) {
+            console.log(err);
+        }
+
     };
+    const addCommentModal = async () => {
 
-    // Add Post
-    const addPost = () => {
-        if (!text && files.length === 0) return alert("Write something or upload!");
-
-        const newPost = {
-            id: Date.now(),
-            user: "Rahul Soni",
-            avatar: "https://i.pravatar.cc/150?img=12",
-            date: "Just Now",
-            text,
-            images: files.map(f => URL.createObjectURL(f)),
-            likes: 0,
-            liked: false,
-            comments: 0,
-            commentsList: [],
-            showComments: false,
-            commentText: ""
-        };
-        setPosts([newPost, ...posts]);
-        setText("");
-        setFiles([]);
-    };
-
-    const addCommentModal = () => {
         if (!commentInput.trim()) return;
 
-        setPosts(posts.map(p =>
-            p.id === selectedPost.id
-                ? {
-                    ...p,
-                    commentsList: [...p.commentsList, commentInput],
-                    comments: p.comments + 1
-                }
-                : p
-        ));
+        try {
 
-        setSelectedPost(prev => ({
-            ...prev,
-            commentsList: [...prev.commentsList, commentInput],
-            comments: prev.comments + 1
-        }));
+            const res = await axiosUser.post("/feed/addcomment", {
+                post_id: selectedPost.id,
+                comment: commentInput
+            });
+            toast.success("Comment added");
+            // UI update
+            setPosts(posts.map(p =>
+                p.id === selectedPost.id
+                    ? {
+                        ...p,
+                        commentsList: [...p.commentsList, commentInput],
+                        comments: p.comments + 1
+                    }
+                    : p
+            ));
 
-        setCommentInput("");
+            setSelectedPost(prev => ({
+                ...prev,
+                commentsList: [...prev.commentsList, commentInput],
+                comments: prev.comments + 1
+            }));
+
+            setCommentInput("");
+
+            // ✅ Close modal (correct way)
+            const modalEl = document.getElementById("commentsModal");
+            const modal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.hide();
+
+            setSelectedPost(null);
+
+        } catch (err) {
+            console.log(err);
+        }
+
     };
 
 
@@ -197,7 +274,7 @@ const Feed = () => {
             <div className="container py-4">
                 <div className="row">
 
-                    <ProfileSidebar />
+                    <ProfileSidebar userdata={user} />
 
                     <div className="col-md-6">
 

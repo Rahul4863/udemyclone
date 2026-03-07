@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const AdminRouter = require('./routes/adminRoute');
 const viewRouter = require('./routes/viewRoute');
 const CourseRouter = require('./routes/courseRoute');
+const FeedRouter = require('./routes/feedRoute')
 const path = require('path');
 
 app.use(express.json());
@@ -27,6 +28,7 @@ app.use('/api/auth', AuthRouter);
 app.use('/api/admin', AdminRouter);
 app.use('/api/view', viewRouter);
 app.use('/api/course', CourseRouter);
+app.use('/api/feed', FeedRouter)
 app.use((req, res) => {
     res.status(404).json({
         success: false,

@@ -6,14 +6,12 @@ const CreatePostModal = ({ text, setText, media, setMedia, addPost }) => {
             images: [...e.target.files]
         }));
     };
-
     const handleVideos = (e) => {
         setMedia(prev => ({
             ...prev,
             videos: [...e.target.files]
         }));
     };
-
     const handleDocs = (e) => {
         setMedia(prev => ({
             ...prev,
@@ -196,7 +194,12 @@ const CreatePostModal = ({ text, setText, media, setMedia, addPost }) => {
                                 Close
                             </button>
 
-                            <button className="btn btn-success" data-bs-dismiss="modal" onClick={addPost}>
+                            <button
+                                type="button"
+                                className="btn btn-success"
+                                onClick={addPost}
+                                data-bs-dismiss="modal"
+                            >
                                 Post
                             </button>
                         </div>
